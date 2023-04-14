@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex&display=swap');
+
+*{
+    font-family: 'Roboto Flex', sans-serif;
+}
+
+/* Nav Bar */
+.navbar-font-size{
+    font-size: 2.7rem;
+}
+
+.navbar-logo{
+    max-height: 9rem;
+}
+
+.navbar{
+    margin-bottom: 5vh;
+}
+
+.nav-item{
+    margin-left: 1.2rem;
+}
+
+.bottom-space{
+    margin-bottom: 0.5rem;
+}
+
+@media screen and (min-width: 992px) {
+    .navbar-font-size{
+        font-size: x-large;
+    }
+    .navbar-logo{
+        max-height: 3rem;
+    }
+    .nav-item{
+        margin-left: 0;
+    }
+    .bottom-space{
+        margin-bottom: 0;
+    }
+}
+
+/* Main Page */
+#mainDiv{
+    margin: auto;
+    max-width: 1400px;
+
+    font-size: 1.9rem;
+}
+
+.centerFlex{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+}
+
+.centerFlex > *{
+    margin-bottom: 5vh;
+}
+
+#contentTitle{
+    text-align: center;
+    margin-bottom: 5vh;
+}
+
+/* Table Content */
+
+#dynamicView{
+    font-weight: bold;
+}
+
+.seeDetails{
+    text-decoration: none;
+    font-size: xx-large;
+    color:black;
+    opacity: 0.6;
+    transition: 250ms;
+}
+
+.seeDetails:hover{
+    opacity: 0.9;
+}
+
+.winnerDetails{
+    opacity: 1;
+    font-weight: bold;
+    transition: 250ms;
+}
+
+.winnerDetails:hover{
+    opacity: 0.7;
+}
+
+.table-size{
+    width: 80vw;
+    height: 50vh;
+}
+
+@media screen and (min-width: 992px) {
+    #mainDiv{
+        font-size: 1.2rem;
+    }
+
+    .seeDetails{
+        font-size: large;
+    }
+}
+
+/* Fixed table header (rever)*/
+    th {
+        position: sticky;
+        top: 0;
+    }
+
+/* Forms */
+
+#showTab, #formTab, #backTab{
+    visibility: hidden;
+}
+
+#forms, #playerForm, #teamForm, #competitionForm{
+    display: none;
+}
+
+/* Tamanho fontes dos forms */
+.form input, .form select, .form button{
+    font-size: 2rem;
+}
+
+@media screen and (min-width: 992px){
+    .form input, .form select, .form button{
+        font-size: 1rem;
+    }
+}
+
+/* Change bootstrap active */
+.active{
+    font-weight: bold;
+}

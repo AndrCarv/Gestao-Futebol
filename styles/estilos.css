@@ -1,0 +1,56 @@
+﻿body{
+	font-family: Arial, Helvetica, sans-serif;
+	background:#fff;
+	margin:0;
+}
+
+#headerTitle {
+	text-align: center;
+}
+
+#divForm {
+	display: none;
+}
+
+#divForm {
+	text-align: left;
+	border: solid black 1px;
+    width: 90%;
+	margin: auto;
+	margin-top: 10px;
+}
+
+nav {
+	background:rgb(109, 109, 109);
+	padding: 20px;
+}
+
+.menu {
+	margin: 0;
+}
+
+.menu li{
+	display:inline-block;
+}
+
+.menu li a{
+  	display: block;
+	font-size: 0.8em;
+	text-transform: uppercase;
+	padding: 0px 20px;
+	color: #FFF;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+table {
+    border-collapse: collapse;
+    width: 90%;
+	margin: auto;
+}
+
+th, td {
+    text-align: left;
+	padding: 8px;
+	border: 1px solid black;
+}

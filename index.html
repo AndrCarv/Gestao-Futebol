@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Futebol</title><!-- Alterar -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/introducion.css">
+    <script src="scripts/country.js"></script>
+    <script src="scripts/player.js"></script>
+    <script src="scripts/team.js"></script>
+    <script src="scripts/competition.js"></script>
+    <script src="scripts/information.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/onload.js" defer></script>
+    <link rel="shortcut icon" href="images/favicon/favicon-16x16.png" type="image/x-icon">
+</head>
+<body> 
+    
+    <!-- <div id="introduction">
+        <div class="centerIntroduction">
+            <img id="introduction-image" src="images/Introduction/ronaldo.png" class="img-fluid" alt="Cristiano Ronaldo">
+        </div>
+        <button id="introduction-button" type="button" class="btn btn-outline-light">Continue</button>
+    </div> -->
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary navbar-font-size" data-bs-theme="dark">
+		<div class="container-fluid">
+		  <!-- Img Logo -->
+		  <a class="navbar-brand" href="javascript: info.showHome()">
+			<img class="navbar-logo" src="images/logo.png" alt="Futebol" >
+		  </a>	  
+		  <!-- Responsive button -->
+		  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon navbar-font-size"></span>
+		  </button>
+		  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul id="anchorList" class="navbar-nav me-auto mb-2 mb-lg-0">
+				<li class="nav-item">
+					<a id="homeAnchor" class="nav-link active" href="javascript: info.showHome()" onclick="info.resetHistory()">Home</a>
+				</li>
+				<li class="nav-item">
+					<a id="competitionsAnchor" class="nav-link" href="javascript: info.showCompetitions()" onclick="info.resetHistory()">Competitions</a>
+				</li>
+				<li class="nav-item">
+					<a id="teamsAnchor" class="nav-link" href="javascript: info.showTeams()" onclick="info.resetHistory()">Teams</a>
+				</li>
+				<li class="nav-item">
+					<a id="playersAnchor" class="nav-link" href="javascript: info.showPlayers()" onclick="info.resetHistory()">Players</a>
+				</li>
+				<li class="nav-item">
+					<a id="countriesAnchor" class="nav-link" href="javascript: info.showCountries()" onclick="info.resetHistory()">Countries</a>
+				</li>
+			</ul>
+			<form class="d-flex bottom-space" role="search">
+			  <input class="form-control me-2 navbar-font-size" type="search" placeholder="Search" aria-label="Search">
+			  <button class="btn btn-outline-success navbar-font-size" type="submit">Search</button>
+			</form>
+		  </div>
+		</div>
+	</nav>
+
+    <main id="mainDiv" class="container">
+        <article>
+            <h1 id="contentTitle" class="navbar-font-size">
+                <span id="dynamicAction">Viewing</span>: <span id="dynamicView">Home</span>
+            </h1>
+
+            <div class="centerFlex">
+                <ul class="nav nav-underline">
+                    <li id="backTab" class="nav-item">
+                        <a class="nav-link" href="javascript: info.selectPreviousTab()">Back</a>
+                    </li>
+                    <li id="showTab" class="nav-item">
+                        <a class="nav-link show-form active" href="javascript: info.showData()">View</a>
+                    </li>
+                    <li id="formTab" class="nav-item">
+                        <a class="nav-link show-form" href="javascript: info.showForm()">Form</a>
+                    </li>
+                </ul>
+                  
+                <div div="dynamicContent">
+                    <div id="contentTable" class="table-responsive table-size">
+                        
+                          
+                    </div>
+        
+                    <!-- Formulários das respetivas entidades -->
+                    <div id="forms">
+                        <!--Form Player-->
+                        <div id="playerForm" class="form border rounded p-2">
+                            <form>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="playerName" class="form-label">Name</label>
+                                        <input type="text" id="playerName" class="form-control" placeholder="João Exemplos" required>
+                                    </div>
+                                    <div class="col mb-3">
+                                        <label for="playerBirthDate" class="form-label">Birth Date</label>
+                                        <input type="date" id="playerBirthDate" class="form-control" min="1980-01-01" max="2007-01-01" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="playerHeight" class="form-label">Height</label>
+                                        <input type="number" id="playerHeight" class="form-control" placeholder="1.95" min="1.50" max="2.40"required>
+                                    </div>
+                                    <div class="col mb-3">
+                                        <label for="playerPosition" class="form-label">Position</label>
+                                        <select class="form-select" id="playerPosition">
+                                            <option selected disabled>Select a position</option>
+                                            <option value="GR">GR</option>
+                                            <option value="DF">DF</option>
+                                            <option value="MC">MC</option>
+                                            <option value="AV">AV</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="playerCountry" class="form-label">Country</label>
+                                        <select class="form-select contriesSelect" id="playerCountry">
+                                            <option selected disabled>Select a country</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <button type="button" class="btn btn-success" onclick="info.addNewPlayer()">Submit</button>
+                                        <button type="reset" class="btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!--Form Team-->
+                        <div id="teamForm" class="form border rounded p-2">
+                            <form>
+                                <div class="row">
+                                    <div class="col mb-3"> 
+                                        <label for="teamName" class="form-label">Name</label>
+                                        <input type="text" id="teamName" class="form-control" placeholder="Belenenses Exemplos" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="teamAcronym" class="form-label">Acronym</label>
+                                        <input type="text" id="teamAcronym" class="form-control" placeholder="CFB Exemplos" required>
+                                    </div>
+                                    <div class="col mb-3">
+                                        <label for="teamCountry" class="form-label">Country</label>
+                                        <select class="form-select contriesSelect" id="teamCountry">
+                                            <option selected disabled>Select a country</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="teamObservations">Observations</label>
+                                        <textarea class="form-control" placeholder="Algumas observações" id="teamObservations" style="height: 100px"></textarea> 
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <button type="button" class="btn btn-success" onclick="info.addNewTeam()">Submit</button>
+                                        <button type="reset" class="btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <!--Form Competition-->
+                        <div id="competitionForm" class="form border rounded p-2">
+                            <form>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="competitionName" class="form-label">Name</label>
+                                        <input type="text" id="competitionName" class="form-control" placeholder="Exemplo" required>
+                                    </div>
+                                    <div class="col mb-3">
+                                        <label for="competitionEdition" class="form-label">Edição</label>
+                                        <input type="number" id="competitionEdition" class="form-control" placeholder="2022" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <button type="button" class="btn btn-success" onclick="info.addNewCompetition()">Submit</button>
+                                        <button type="reset" class="btn btn-danger">Reset</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            
+            <!-- <div id="divForm">
+                <form action="javascript: info.addPerson();">
+                    <input id="personId" type="hidden" />
+                    <div>
+                        <label for="personName">Name</label>
+                        <input id="personName" type="text" />
+                    </div>
+                    <div>
+                        <label for="personDate">Birth Date</label>
+                        <input id="personDate" type="date" />
+                    </div>
+                    <div>
+                        <label for="personCountry">Country</label>
+                        <select id="personCountry"></select>
+                    </div>
+                    <div>
+                        <button type="reset">clear</button>
+                        <button type="submit">add</button>
+                        <button type="button" onclick="info.updatePerson()">Editar</button>
+                        <button type="button" onclick="info.deletePerson()">Eliminar</button>
+                    </div>
+                </form>
+            </div> -->
+        </article>
+    </main>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+
+    <!-- <script src="scripts/cosmetic/navBar-collapse.js"></script> -->
+    <!-- <script src="scripts/cosmetic/introduction.js"></script> -->
+</body>
+</html>
