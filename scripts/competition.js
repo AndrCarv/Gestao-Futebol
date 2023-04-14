@@ -7,7 +7,7 @@
 * @param {string} name - nome da competicao
 * @param {int} edition - ano da ediçao do torneio
 * @param {Teams} winner - equipa vencedora
-* @param {boolean} estate - estado da competição terminado - em competiçao
+* @param {boolean} estate - estado da competição T-terminado F- em competiçao
 * @param {Teams[]} teams - equipas
 */
 class Competition {

@@ -64,10 +64,10 @@ window.onload = function (event) {
     /* meter olho centro */
 
 
-    info.addCompetition(1, 'Taça de Portugal', '2023', '',  true, []);//ult e bolean true se tiver terminado, so para testar o log
+    info.addCompetition(1, 'Taça de Portugal', '2023', '',  false, []);//ult e bolean true se tiver terminado, so para testar o log
     info.addCompetition(2, 'Taça da liga', '2023', '', false, []);//ult e bolean false se estiver a decorrer 
 
-    info.addCompetition(3, 'Liga Europa', '2023', info.teams[3], false, [
+    info.addCompetition(3, 'Liga Europa', '2023', info.teams[3], true, [
         info.teams[2],
         info.teams[3]
     ]); //teste liga criada com o SCB e FCP la dentro
@@ -127,10 +127,10 @@ function tableLine(object, headerFormat) {
 
 function tableRowConditions(property, content){
     if(property === 'state'){//se for o estado de um campeonato
-        if(content)
+        if(!content)
             return 'A decorrer'
         else
-        return 'Terminado'
+            return 'Terminado'
     }
 
     if(property === 'idCountry'){

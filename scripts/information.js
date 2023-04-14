@@ -279,7 +279,9 @@ class Information {
         })
     }
 
-    /* ADD */
+    /**
+     * Criar objetos de cada classe
+     */
     
     addCountry(id, name, shortName) {
         /** Obter dados e criar país */
@@ -302,18 +304,23 @@ class Information {
         const competition = new Competition(id, name, date, teams, winner, state) 
         this.competitions.push(competition)
     }
-    //addTeam(id, name, sigla, players, idCountry, description){
+
+    /**
+     * Adicionar registos através dos forms
+     */
+
     addNewPlayer(){
         //const id = generateId(); experiencia para criar o id
         const name = document.getElementById("playerName").value.trim();
         const birthDate = document.getElementById("playerBirthDate").value.trim();
+        
         //buscar os dados ao dropbox dos paises
-        const countrySelect = document.getElementById("playerCountry");
-        const idCountry = countrySelect.options[countrySelect.selectedIndex].value;
+        const idCountry = parseInt(document.querySelector('#playerCountry').value);
         const height = document.getElementById("playerHeight").value.trim();
+
         //buscar os dados ao dropbox da posicao
-        const positionSelect = document.getElementById("playerPosition");
-        const position = positionSelect.options[positionSelect.selectedIndex].value;
+        const position = document.querySelector('#playerPosition').value
+
         //o novo id criado sera sempre um acima, se houver 5. o prox tem o id 6
         const id = info.unemployedPlayers.length + 1 ;
         
@@ -321,24 +328,28 @@ class Information {
         if (!name || !birthDate || !idCountry || !height || !position) {
             alert("Por favor, preencha todos os campos obrigatórios.");
             return;
-            }
-
-        const p = new Player(id, name, birthDate, idCountry, height, position)
-        this.unemployedPlayers.push(p)
-
-        console.log(info.unemployedPlayers);
-        alert("Dados inseridos correctamente");
-
         }
+
+        /* Limpar form */
+        document.querySelector('#playerForm form').reset()
+
+        /* Criar objeto */
+        const p = new Player(id, name, birthDate, idCountry, height, position, [])
+        this.unemployedPlayers.push(p)
+        console.log(info.unemployedPlayers);
+        this.showPlayers()
+    }
 
     addNewTeam(){
 
         const name = document.getElementById("teamName").value.trim();
         const acronym = document.getElementById("teamAcronym").value.trim();
-        const countrySelect = document.getElementById("teamCountry");
-        const idCountry = countrySelect.options[countrySelect.selectedIndex].value;
+
+        //buscar os dados ao dropbox dos paises
+        const idCountry = parseInt(document.querySelector('#teamCountry').value);
         const description = document.getElementById("teamObservations").value.trim();
         const id = info.teams.length + 1 ;
+        const players = [];
 
         //validar os dados
         if (!name || !acronym || !idCountry || !description) {
@@ -346,11 +357,14 @@ class Information {
             return;
           }
 
-        const t = new Team(id, name, acronym, idCountry, description)
+        /* Limpar form */
+        document.querySelector('#teamForm form').reset()
+
+        /* Criar objeto */
+        const t = new Team(id, name, acronym, idCountry, description, players)
         this.teams.push(t)
         console.log(info.teams);
-        alert("Dados inseridos correctamente");
-
+        this.showTeams()
     }
 
     addNewCompetition(){
@@ -360,7 +374,7 @@ class Information {
         const date = document.getElementById("competitionEdition").value.trim();
         const teams = [];
         const winner = "";
-        const state = true;
+        const state = false;//ainda nao acabou
         
         //validar o nome e date
         if (!name || !date) {
@@ -368,11 +382,14 @@ class Information {
             return;
           }
 
+        /* Limpar form */
+        document.querySelector('#competitionForm form').reset()
+
+        /* Criar objeto */
         const c = new Competition(id,name,date, winner, state, teams)
         this.competitions.push(c);
         console.log(info.competitions)
-        alert("Dados inseridos correctamente");
-
+        this.showCompetitions()
     }
 }
 /**
