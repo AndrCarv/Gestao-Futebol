@@ -83,28 +83,36 @@
                 <div div="dynamicContent">
                     <div id="contentTable" class="table-responsive table-size">
                         
-                          
                     </div>
         
                     <!-- Formulários das respetivas entidades -->
                     <div id="forms">
                         <!--Form Player-->
-                        <div id="playerForm" class="form border rounded p-2">
+                        <div id="playerForm" class="form border rounded p-3">
                             <form>
                                 <div class="row">
                                     <div class="col mb-3">
                                         <label for="playerName" class="form-label">Name</label>
                                         <input type="text" id="playerName" class="form-control" placeholder="João Exemplos" required>
+                                        <div class="invalid-feedback rounded p-2 bg-pink">
+                                            
+                                        </div>                                    
                                     </div>
                                     <div class="col mb-3">
                                         <label for="playerBirthDate" class="form-label">Birth Date</label>
                                         <input type="date" id="playerBirthDate" class="form-control" min="1980-01-01" max="2007-01-01" required>
+                                        <div class="invalid-feedback">
+                                            
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
                                         <label for="playerHeight" class="form-label">Height</label>
-                                        <input type="number" id="playerHeight" class="form-control" placeholder="1.95" min="1.50" max="2.40"required>
+                                        <input type="number" id="playerHeight" class="form-control" placeholder="1.82m" min="1.50" max="2.40"required>
+                                        <div class="invalid-feedback">
+                                            
+                                        </div>
                                     </div>
                                     <div class="col mb-3">
                                         <label for="playerPosition" class="form-label">Position</label>
@@ -115,6 +123,9 @@
                                             <option value="MC">MC</option>
                                             <option value="AV">AV</option>
                                         </select>
+                                        <div class="invalid-feedback">
+                                            
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -123,18 +134,21 @@
                                         <select class="form-select contriesSelect" id="playerCountry" required>
                                             <option selected disabled value="">Select a country</option>
                                         </select>
+                                        <div class="invalid-feedback">
+                                            
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <button type="button" class="btn btn-success" onclick="event.preventDefault(); info.addNewPlayer()">Submit</button>
+                                        <button type="button" class="btn btn-success" onclick="info.addNewPlayer()">Submit</button>
                                         <button type="reset" class="btn btn-danger">Reset</button>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <!--Form Team-->
-                        <div id="teamForm" class="form border rounded p-2">
+                        <div id="teamForm" class="form border rounded p-3">
                             <form>
                                 <div class="row">
                                     <div class="col mb-3"> 
@@ -162,14 +176,14 @@
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <button type="submit" class="btn btn-success" onclick="event.preventDefault(); info.addNewTeam()">Submit</button>
+                                        <button type="button" class="btn btn-success" onclick="info.addNewTeam()">Submit</button>
                                         <button type="reset" class="btn btn-danger">Reset</button>
                                     </div>
                                 </div>
                             </form>
                         </div>
                         <!--Form Competition-->
-                        <div id="competitionForm" class="form border rounded p-2">
+                        <div id="competitionForm" class="form border rounded p-3">
                             <form>
                                 <div class="row">
                                     <div class="col mb-3">
@@ -183,7 +197,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <button type="submit" class="btn btn-success" onclick="event.preventDefault(); info.addNewCompetition()">Submit</button>
+                                        <button type="button" class="btn btn-success" onclick="info.addNewCompetition()">Submit</button>
                                         <button type="reset" class="btn btn-danger">Reset</button>
                                     </div>
                                 </div>

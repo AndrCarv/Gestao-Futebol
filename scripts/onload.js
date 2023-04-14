@@ -5,6 +5,10 @@
  */
 
 const competitionEdition = document.querySelector('#competitionEdition')
-competitionEdition.min = returnEditionAge('start')
-competitionEdition.max = returnEditionAge()
-competitionEdition.value = returnEditionAge('now')
+competitionEdition.min = getYear(-2)
+competitionEdition.max = getYear(+2)
+competitionEdition.value = getYear()
+
+const playerBirthDate = document.querySelector('#playerBirthDate')
+playerBirthDate.min = getDate(-16)//no minimo 16 anos
+playerBirthDate.min = getDate(-50)//no maximo 50 anos

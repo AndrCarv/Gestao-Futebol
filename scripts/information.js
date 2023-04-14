@@ -310,6 +310,7 @@ class Information {
      */
 
     addNewPlayer(){
+        hideErrors()
         //const id = generateId(); experiencia para criar o id
         const name = document.getElementById("playerName").value.trim();
         const birthDate = document.getElementById("playerBirthDate").value.trim();
@@ -317,7 +318,7 @@ class Information {
         //buscar os dados ao dropbox dos paises
         const idCountry = parseInt(document.querySelector('#playerCountry').value);
         const height = document.getElementById("playerHeight").value.trim();
-
+        
         //buscar os dados ao dropbox da posicao
         const position = document.querySelector('#playerPosition').value
 
@@ -328,6 +329,28 @@ class Information {
         if (!name || !birthDate || !idCountry || !height || !position) {
             alert("Por favor, preencha todos os campos obrigatórios.");
             return;
+        }
+
+        if(!onlyLetters(name)){
+            console.error('Nome com caracteres estranhos?!')
+            showError('playerName', "O nome só deve possuir letras")
+            return
+        }
+
+        if(!inInterval(name, 3, 20)){
+            console.error('Com um nome desse tamanho deves ser monarca!')
+            return
+        }
+
+        if(height < 1.5 || height > 2.4){
+            console.error('Tás grande pá!')
+            return
+        }
+        
+        const minMaxDate = document.getElementById("playerBirthDate")
+        if(!firstIsOlder(minMaxDate.min, birthDate) || !firstIsOlder(birthDate, minMaxDate.max)){
+            console.error('O jogador tem uma idade duvidosa não?')
+            return
         }
 
         /* Limpar form */
@@ -341,7 +364,6 @@ class Information {
     }
 
     addNewTeam(){
-
         const name = document.getElementById("teamName").value.trim();
         const acronym = document.getElementById("teamAcronym").value.trim();
 
@@ -352,10 +374,35 @@ class Information {
         const players = [];
 
         //validar os dados
-        if (!name || !acronym || !idCountry || !description) {
+        if (!name || !acronym || !idCountry) {
             alert("Por favor, preencha todos os campos obrigatórios.");
             return;
-          }
+        }
+
+        if(!onlyLetters(name)){
+            console.error('Nome com caracteres estranhos?!')
+            return
+        }
+
+        if(!inInterval(name, 3, 20)){
+            console.error('Com um nome desse tamanho deves ser monarca!')
+            return
+        }
+
+        if(!onlyLetters(acronym)){
+            console.error('Acronimo so pode ter letras')
+            return
+        }
+
+        if(!inInterval(acronym, 3, 4)){
+            console.error('Acronimo muito grande!')
+            return
+        }
+
+        if(!inInterval(description, 0, 30)){
+            console.error('Com um nome desse tamanho deves ser monarca!')
+            return
+        }
 
         /* Limpar form */
         document.querySelector('#teamForm form').reset()
@@ -380,13 +427,29 @@ class Information {
         if (!name || !date) {
             alert("Por favor, preencha todos os campos obrigatórios.");
             return;
-          }
+        }
+
+        if(!onlyLetters(name)){
+            console.error('Nome com caracteres estranhos?!')
+            return
+        }
+
+        if(!inInterval(name, 3, 20)){
+            console.error('Com um nome desse tamanho deves ser monarca!')
+            return
+        }
+
+        const dateLimits = document.getElementById("competitionEdition")
+        if(date < dateLimits.min || date > dateLimits.max){
+            console.error('Por favor introduza uma ano entre ' + dateLimits.min + ' e ' + dateLimits.max)
+            return
+        }
 
         /* Limpar form */
         document.querySelector('#competitionForm form').reset()
 
         /* Criar objeto */
-        const c = new Competition(id,name,date, winner, state, teams)
+        const c = new Competition(id, name, date, winner, state, teams)
         this.competitions.push(c);
         console.log(info.competitions)
         this.showCompetitions()
@@ -564,15 +627,59 @@ function hideFormsExceptOne(id){
 /** 
  * Retorna dois anos antes ou dois anos depois do ano atual
  */
- function returnEditionAge(type){
-    const nowDate = new Date().getFullYear()
-
-    if(type === 'start'){
-        return nowDate - 2
-
-    }else if(type === 'now'){
-        return nowDate
-    }
-
-    return nowDate + 2
+function getYear(sum){
+    return new Date().getFullYear() + (sum || 0)
 }
+
+function getDate(sum){
+    const date = new Date(getYear(sum || 0)).toLocaleDateString() //calcula um numero de anos antes do atual
+    return date.split('/').reverse().join('-') //troca a ordem e adiciona hifen
+}
+
+/**
+ * Verificações de inputs
+ */
+/* Verifica se um input só tem letras */
+function onlyLetters(input){
+    for(let i = 0; i < input.length; i++){
+        if(!(input[i] >= 'a' && input[i] <= 'z') && !(input[i] >= 'A' && input[i] <= 'Z')){
+            return false;
+        }
+    }
+    return true;
+}
+
+/* Verifica se o comprimento de uma string está dentro de um intervalo */
+function inInterval(string, min, max){
+    if(string.length >= min && string.length <= max)
+        return true
+
+    return false
+}
+
+/* Verificar que data é mais antiga */
+function firstIsOlder(date1, date2){
+    const d1 = new Date(date1)
+    const d2 = new Date(date2)
+
+    if(d1.getTime() <= d2.getTime())
+        return true
+    return false
+}
+
+/* Esconder todos os erros */
+function hideErrors(){
+    const errors = document.querySelectorAll('.invalid-feedback')
+    errors.forEach(error =>{
+        error.style.display = 'none'
+        error.textContent = ''
+    })
+}
+
+/* Atribuir um erro a um input específico */
+function showError(id, message){
+    const error = document.querySelector('#'+id).nextElementSibling
+    error.style.display = 'block'
+    error.textContent = message
+}
+
