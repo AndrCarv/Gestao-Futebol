@@ -108,8 +108,8 @@
                                     </div>
                                     <div class="col mb-3">
                                         <label for="playerPosition" class="form-label">Position</label>
-                                        <select class="form-select" id="playerPosition">
-                                            <option selected disabled>Select a position</option>
+                                        <select class="form-select" id="playerPosition" required>
+                                            <option selected disabled value="">Select a position</option>
                                             <option value="GR">GR</option>
                                             <option value="DF">DF</option>
                                             <option value="MC">MC</option>
@@ -120,14 +120,14 @@
                                 <div class="row">
                                     <div class="col mb-3">
                                         <label for="playerCountry" class="form-label">Country</label>
-                                        <select class="form-select contriesSelect" id="playerCountry">
-                                            <option selected disabled>Select a country</option>
+                                        <select class="form-select contriesSelect" id="playerCountry" required>
+                                            <option selected disabled value="">Select a country</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <button type="button" class="btn btn-success" onclick="info.addNewPlayer()">Submit</button>
+                                        <button type="button" class="btn btn-success" onclick="event.preventDefault(); info.addNewPlayer()">Submit</button>
                                         <button type="reset" class="btn btn-danger">Reset</button>
                                     </div>
                                 </div>
@@ -150,7 +150,7 @@
                                     <div class="col mb-3">
                                         <label for="teamCountry" class="form-label">Country</label>
                                         <select class="form-select contriesSelect" id="teamCountry">
-                                            <option selected disabled>Select a country</option>
+                                            <option selected disabled value="">Select a country</option>
                                         </select>
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <button type="button" class="btn btn-success" onclick="info.addNewTeam()">Submit</button>
+                                        <button type="submit" class="btn btn-success" onclick="event.preventDefault(); info.addNewTeam()">Submit</button>
                                         <button type="reset" class="btn btn-danger">Reset</button>
                                     </div>
                                 </div>
@@ -183,7 +183,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <button type="button" class="btn btn-success" onclick="info.addNewCompetition()">Submit</button>
+                                        <button type="submit" class="btn btn-success" onclick="event.preventDefault(); info.addNewCompetition()">Submit</button>
                                         <button type="reset" class="btn btn-danger">Reset</button>
                                     </div>
                                 </div>
