@@ -128,17 +128,33 @@ th {
     font-size: 2rem;
 }
 
+.form-select option{
+    font-size:1rem;
+}
+
 .invalid-feedback{
     display: none;
 }
 
 #forms{
-    width: 40vw;
+    width: 80vw;
+}
+
+.forms .row{
+    margin-bottom: 1rem;
 }
 
 @media screen and (min-width: 992px){
     .form input, .form select, .form button{
         font-size: 1rem;
+    }
+
+    .form-select option{
+        font-size:1rem;
+    }
+
+    #forms{
+        width: 40vw;
     }
 }
 
