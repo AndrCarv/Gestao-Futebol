@@ -339,17 +339,20 @@ class Information {
 
         if(!inInterval(name, 3, 20)){
             console.error('Com um nome desse tamanho deves ser monarca!')
+            showError('playerName', "Introduza entre 3 a 20 caracteres")
             return
         }
 
         if(height < 1.5 || height > 2.4){
             console.error('Tás grande pá!')
+            showError('playerHeight', "Introduza um valor entre 1.50 a 2.40")
             return
         }
         
         const minMaxDate = document.getElementById("playerBirthDate")
         if(!firstIsOlder(minMaxDate.min, birthDate) || !firstIsOlder(birthDate, minMaxDate.max)){
             console.error('O jogador tem uma idade duvidosa não?')
+            showError('playerBirthDate', "Introduza uma data entre 1980 e 2007")
             return
         }
 
@@ -381,26 +384,31 @@ class Information {
 
         if(!onlyLetters(name)){
             console.error('Nome com caracteres estranhos?!')
+            showError('teamName', "O nome só deve possuir letras")
             return
         }
 
         if(!inInterval(name, 3, 20)){
             console.error('Com um nome desse tamanho deves ser monarca!')
+            showError('teamName', "Introduza entre 3 a 20 caracteres")
             return
         }
 
         if(!onlyLetters(acronym)){
             console.error('Acronimo so pode ter letras')
+            showError('teamAcronym', "O acronimo leva só letras")
             return
         }
 
         if(!inInterval(acronym, 3, 4)){
-            console.error('Acronimo muito grande!')
+            console.error('Acronimo tamanho incorrecto!')
+            showError('teamAcronym', "Introduza entre 3 a 4 caracteres")
             return
         }
 
         if(!inInterval(description, 0, 30)){
-            console.error('Com um nome desse tamanho deves ser monarca!')
+            console.error('Com uma descrição desse tamanho deves ser monarca!')
+            showError('teamObservations', "Introduza entre 0 a 30 caracteres")
             return
         }
 
@@ -429,19 +437,22 @@ class Information {
             return;
         }
 
-        if(!onlyLetters(name)){
+        if(!onlyLetters(name)){//esta a detetar isto quando damos espaço a meio do nome
             console.error('Nome com caracteres estranhos?!')
+            showError('competitionName', "O nome deve levar só letras")
             return
         }
 
         if(!inInterval(name, 3, 20)){
             console.error('Com um nome desse tamanho deves ser monarca!')
+            showError('competitionName', "Introduza entre 3 a 20 caracteres")
             return
         }
 
         const dateLimits = document.getElementById("competitionEdition")
         if(date < dateLimits.min || date > dateLimits.max){
             console.error('Por favor introduza uma ano entre ' + dateLimits.min + ' e ' + dateLimits.max)
+            showError('competitionEdition', "Só possivel criar uma edição com 2 anos de diferença do ano currente")
             return
         }
 
