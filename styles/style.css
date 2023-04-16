@@ -72,8 +72,10 @@
 
 .seeDetails{
     text-decoration: none;
+    text-align: center;
     font-size: xx-large;
     color:black;
+
     opacity: 0.6;
     transition: 250ms;
 }

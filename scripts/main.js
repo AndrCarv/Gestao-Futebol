@@ -80,17 +80,17 @@ window.onload = function (event) {
 * @param {Object} object - objecto do qual vamos transformar o conteudo dos seus atributos em linhas
 * @param {boolean} headerFormat - controla de o formato é cabeçalho ou linha normal
 */
-function tableLine(object, headerFormat) {
+function tableLine(object, headerFormat, unchangeable) {
     var tr = document.createElement("tr");
     var tableCell = null;
     var id = null
+    var hasChild = null
     
     for (var property in object) {
         const content = object[property] //desta maneira podemos escolher o texto do cabeçalho da tabela
         if ((object[property] instanceof Function))
             continue;
         if (headerFormat) {
-            
             tableCell = document.createElement("th");
             tableCell.scope = "col"
             tableCell.textContent = content[0].toUpperCase() + content.slice(1);
@@ -105,10 +105,10 @@ function tableLine(object, headerFormat) {
                 detailAnchor.href = `javascript: info.seeDetails(${id})`//precisamos de possibilitar a vista detalhada
                 detailAnchor.innerHTML = '<i class="fa-solid fa-eye seeDetails"></i>'
                 tableCell.appendChild(detailAnchor)
-
+                hasChild = true
             }else if (typeof content === "object" && property === 'winner') {//se é o vencedor de um jogo
                 const detailAnchor = document.createElement('a')
-                                                                //id da equipa   id do torneio
+                                                                //id da equipa-Se é vencedor
                 detailAnchor.href = `javascript: info.seeDetails(${id}, true)`//precisamos de possibilitar a vista detalhada
                 detailAnchor.innerHTML = content.name//nome da equipa
                 detailAnchor.classList.add('seeDetails')
@@ -118,10 +118,16 @@ function tableLine(object, headerFormat) {
             }else{
                 tableCell.textContent = tableRowConditions(property, content)
             }
-                
         }
         tr.appendChild(tableCell);
     }
+
+    if(!unchangeable){//se pode ser editado e eliminado
+        if(!headerFormat){//se não é cabeçalho
+            tr = addEditRemoveIcons(tr, hasChild)
+        }
+    }
+    
     return tr;
 };
 
@@ -143,4 +149,35 @@ function tableRowConditions(property, content){
     
     
     return content
+}
+
+function addEditRemoveIcons(tr, hasChild){
+    var tableCell = null
+    if(hasChild){
+        /* Adicionar */
+        tableCell = document.createElement("td");
+        const addAnchor = document.createElement('a')
+        /* addAnchor.href = `javascript: info.seeDetails(${id}, true)`//Alterar consoante necessário */
+        addAnchor.innerHTML = '<i class="fa-solid fa-circle-plus seeDetails"></i>'
+        tableCell.appendChild(addAnchor)
+        tr.appendChild(tableCell)
+    }
+
+    /* Editar */
+    tableCell = document.createElement("td");
+    const editAnchor = document.createElement('a')
+    /* editAnchor.href = `javascript: info.seeDetails(${id}, true)`//Alterar consoante necessário */
+    editAnchor.innerHTML = '<i class="fa-solid fa-pencil seeDetails"></i>'
+    tableCell.appendChild(editAnchor)
+    tr.appendChild(tableCell)
+
+    /* Remover */
+    tableCell = document.createElement("td");
+    const deleteAnchor = document.createElement('a')
+    /* deleteAnchor.href = `javascript: info.seeDetails(${id}, true)`//Alterar consoante necessário */
+    deleteAnchor.innerHTML = '<i class="fa-solid fa-trash-can seeDetails"></i>'
+    tableCell.appendChild(deleteAnchor)
+    tr.appendChild(tableCell)
+
+    return tr
 }

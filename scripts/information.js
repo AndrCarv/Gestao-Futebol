@@ -79,7 +79,7 @@ class Information {
         updateDynamicView()
 
         /** Alternar conteudo */
-        updateTableContent(this.competitions, 'ID', 'Name', 'Edition', 'Winner', 'State', 'View Teams')
+        updateTableContent(this.competitions, 'ID', 'Name', 'Edition', 'Winner', 'State', 'View Teams', 'Add Teams', 'Edit', 'Delete')
     }
 
     showTeams(){
@@ -143,7 +143,7 @@ class Information {
         updateDynamicView(teamName)
 
         /** Alternar conteudo */
-        updateTableContent(calculateAge(players), 'ID', 'Name', 'Age', 'Country', 'Heigth', 'Position')
+        updateTableContent(calculateAge(players), 'ID', 'Name', 'Age', 'Country', 'Heigth', 'Position', 'Edit', 'Delete')
     }
 
     findCompetitionTeams(CompetitonName, teams){
@@ -151,57 +151,51 @@ class Information {
         updateDynamicView(CompetitonName)
 
         /** Alternar conteudo */
-        updateTableContent(teams, 'ID', 'Name', 'Acronym', 'Country', 'Description', 'View Players')
+        updateTableContent(teams, 'ID', 'Name', 'Acronym', 'Country', 'Description', 'View Players', 'Add Teams', 'Edit', 'Delete')
     }
 
     /* Show Nested Arrays */
     seeDetails(id, isWinner){
-        const links = document.querySelectorAll('#anchorList a')
-        links.forEach(link => {
-            const element = document.querySelector('#' + link.id)
-            if(element.classList.contains('active')){
-                switch(element.textContent){
-                    case 'Teams':
-                        const indexPlayer = this.teams.findIndex(team => team.id === id)
-                            if(indexPlayer > -1){
-                                if(this.teams[indexPlayer].players.length === 0){
-                                    /* console.error("Registos não encontrados") */
-                                    break
-                                }
-                                /* this.backHistory.push([this.teams[indexPlayer].name, this.teams[indexPlayer].players]) */
-                                this.findTeamPlayers(this.teams[indexPlayer].name, this.teams[indexPlayer].players)
-                                removeActiveClass()
-                                addActive('playersAnchor')
-                                activateTab()
-                                showTab('showTab')
-                                hideTab('formTab')
-                            }
-                        break;
-                    case 'Competitions':
-                        const indexTeam = this.competitions.findIndex(competition => competition.id === id)
-                        if(indexTeam > -1){
-                            if(this.competitions[indexTeam].teams.length === 0){
-                                /* console.error("Registos não encontrados") */
-                                break
-                            }
-
-                            if(!isWinner){/* Caso seja para mostrar o vencedor de um torneio */
-                                this.backHistory.push([this.competitions[indexTeam].name, this.competitions[indexTeam].teams])
-                                this.findCompetitionTeams(this.competitions[indexTeam].name, this.competitions[indexTeam].teams)
-                            }else{/* o backHistory recebe o nome de apresentação e o array */
-                                this.backHistory.push([this.competitions[indexTeam].winner.name, this.competitions.winner])
-                                this.findCompetitionTeams(this.competitions[indexTeam].winner.name, [this.competitions[indexTeam].winner])
-                            }
+        switch(navLinkName()){
+            case 'Teams':
+                const indexPlayer = this.teams.findIndex(team => team.id === id)
+                    if(indexPlayer > -1){
+                        if(this.teams[indexPlayer].players.length === 0){
+                            /* console.error("Registos não encontrados") */
+                            break
                         }
+                        /* this.backHistory.push([this.teams[indexPlayer].name, this.teams[indexPlayer].players]) */
+                        this.findTeamPlayers(this.teams[indexPlayer].name, this.teams[indexPlayer].players)
                         removeActiveClass()
-                        addActive('teamsAnchor')
+                        addActive('playersAnchor')
                         activateTab()
                         showTab('showTab')
                         hideTab('formTab')
-                        break;
+                    }
+                break;
+            case 'Competitions':
+                const indexTeam = this.competitions.findIndex(competition => competition.id === id)
+                if(indexTeam > -1){
+                    if(this.competitions[indexTeam].teams.length === 0){
+                        /* console.error("Registos não encontrados") */
+                        break
+                    }
+
+                    if(!isWinner){/* Caso seja para mostrar o vencedor de um torneio */
+                        this.backHistory.push([this.competitions[indexTeam].name, this.competitions[indexTeam].teams])
+                        this.findCompetitionTeams(this.competitions[indexTeam].name, this.competitions[indexTeam].teams)
+                    }else{/* o backHistory recebe o nome de apresentação e o array */
+                        this.backHistory.push([this.competitions[indexTeam].winner.name, this.competitions.winner])
+                        this.findCompetitionTeams(this.competitions[indexTeam].winner.name, [this.competitions[indexTeam].winner])
+                    }
                 }
-            }
-        })
+                removeActiveClass()
+                addActive('teamsAnchor')
+                activateTab()
+                showTab('showTab')
+                hideTab('formTab')
+                break;
+        }
     }
 
     /**
@@ -242,41 +236,29 @@ class Information {
         }
 
         /* Associar o form a mostrar */
-        const links = document.querySelectorAll('#anchorList a')
-        links.forEach(link => {
-            const element = document.querySelector('#' + link.id)
-            if(element.classList.contains('active')){
-                switch(element.textContent){
-                    case 'Competitions':
-                        hideFormsExceptOne('competitionForm')
-                        break;
-                    case 'Teams':
-                        hideFormsExceptOne('teamForm')
-                        break;
-                    case 'Players':
-                        hideFormsExceptOne('playerForm')
-                        break;
-                }
-            }
-        })
+        switch(navLinkName()){
+            case 'Competitions':
+                hideFormsExceptOne('competitionForm')
+                break;
+            case 'Teams':
+                hideFormsExceptOne('teamForm')
+                break;
+            case 'Players':
+                hideFormsExceptOne('playerForm')
+                break;
+        }
         
     }
 
     selectPreviousTab(){
-        const links = document.querySelectorAll('#anchorList a')
-        links.forEach(link => {
-            const element = document.querySelector('#' + link.id)
-            if(element.classList.contains('active')){
-                switch(element.textContent){
-                    case 'Teams':
-                        this.showCompetitions()
-                        break;
-                    case 'Players':
-                        this.showTeams()
-                        break;
-                }
-            }
-        })
+        switch(navLinkName()){
+            case 'Teams':
+                this.showCompetitions()
+                break;
+            case 'Players':
+                this.showTeams()
+                break;
+        }
     }
 
     /**
@@ -430,7 +412,7 @@ class Information {
             return;
         }
 
-        if(!onlyLetters(name)){
+        if(!onlyLetters(name)){//esta a detetar isto quando damos espaço a meio do nome
             showError('competitionName', "O nome deve levar só letras")
             return
         }
@@ -456,6 +438,24 @@ class Information {
         this.showCompetitions()
     }
 }
+
+/**
+ * Retorna o nome do link atual
+ */
+function navLinkName(){
+    var navBarLinkContent = null
+    const links = document.querySelectorAll('#anchorList a')
+    links.forEach(link => {
+        const element = document.querySelector('#' + link.id)
+        if(element.classList.contains('active')){
+            navBarLinkContent = element.textContent
+        }
+    })
+    
+    return navBarLinkContent
+}
+
+
 /**
  * Deixa um link nav "selecionado"
  */
@@ -570,7 +570,7 @@ function updateTableContent(array, ...args){
     
     const thead = document.createElement('thead')
     thead.classList.add('table-success')
-    thead.appendChild(tableLine(tableHeaders), 'th')
+    thead.appendChild(tableLine(tableHeaders, true))
     table.appendChild(thead)
 
     const tbody = document.createElement('tbody')
@@ -642,11 +642,10 @@ function getDate(sum){
  */
 /* Verifica se um input só tem letras */
 function onlyLetters(input){
-    for(let i = 0; i < input.length; i++){
-        if(!(input[i] >= 'a' && input[i] <= 'z') && !(input[i] >= 'A' && input[i] <= 'Z') && !(input[i] === ' ')){
-            return false;
-        }
-    }
+    const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/; //permite letras, espaços e acentos apenas
+    if(!regex.test(input))
+        return false
+
     return true;
 }
 
