@@ -60,7 +60,6 @@ window.onload = function (event) {
         new Player(3, 'Ricardo Pereira', '1994-10-05', 3, 1.85, 'DE')
     ]);
 
-    /* Fazer para dar para ver jogadores dentro */
     /* meter olho centro */
 
 
@@ -80,7 +79,7 @@ window.onload = function (event) {
 * @param {Object} object - objecto do qual vamos transformar o conteudo dos seus atributos em linhas
 * @param {boolean} headerFormat - controla de o formato é cabeçalho ou linha normal
 */
-function tableLine(object, headerFormat, unchangeable) {
+function tableLine(object, headerFormat) {
     var tr = document.createElement("tr");
     var tableCell = null;
     var id = null
@@ -92,14 +91,14 @@ function tableLine(object, headerFormat, unchangeable) {
             continue;
         if (headerFormat) {
             tableCell = document.createElement("th");
-            tableCell.scope = "col"
+            tableCell.scope = "col" //bootstrap
             tableCell.textContent = content[0].toUpperCase() + content.slice(1);
         } else {
             if(id === null)//verifica o id da linha
                 id = content
 
             tableCell = document.createElement("td");
-            tableCell.scope = "row"
+            tableCell.scope = "row" //bootstrap
             if(Array.isArray(content)){//se for um array, ou seja, equipas ou jogadores
                 const detailAnchor = document.createElement('a')
                 detailAnchor.href = `javascript: info.seeDetails(${id})`//precisamos de possibilitar a vista detalhada
@@ -122,11 +121,8 @@ function tableLine(object, headerFormat, unchangeable) {
         tr.appendChild(tableCell);
     }
 
-    if(!unchangeable){//se pode ser editado e eliminado
-        if(!headerFormat){//se não é cabeçalho
-            tr = addEditRemoveIcons(tr, hasChild)
-        }
-    }
+    //Remover editar adicionar filhos
+    tr = addEditRemoveIcons(tr, id, headerFormat)
     
     return tr;
 };
@@ -151,33 +147,86 @@ function tableRowConditions(property, content){
     return content
 }
 
-function addEditRemoveIcons(tr, hasChild){
+function addEditRemoveIcons(tr, id, headerFormat){
     var tableCell = null
-    if(hasChild){
-        /* Adicionar */
-        tableCell = document.createElement("td");
-        const addAnchor = document.createElement('a')
-        /* addAnchor.href = `javascript: info.seeDetails(${id}, true)`//Alterar consoante necessário */
-        addAnchor.innerHTML = '<i class="fa-solid fa-circle-plus seeDetails"></i>'
-        tableCell.appendChild(addAnchor)
-        tr.appendChild(tableCell)
+    
+    if(!headerFormat){//celula
+        switch(navLinkName()){
+            case 'Competitions':
+            case 'Teams':
+                if(info.backHistory.length === 0){//nao se pode adicionar nada a filhos
+                    /* Adicionar */
+                    tableCell = document.createElement("td");
+                    const addAnchor = document.createElement('a')
+                    /* addAnchor.href = `javascript: info.seeDetails(${id}, true)`//Alterar consoante necessário */
+                    addAnchor.innerHTML = '<i class="fa-solid fa-circle-plus seeDetails"></i>'
+                    tableCell.appendChild(addAnchor)
+                    tr.appendChild(tableCell)
+                }
+                break;
+        }
+        switch(navLinkName()){//Countries nao alteram
+            case 'Competitions':
+            case 'Teams':
+            case 'Players':
+                if(info.backHistory.length <= 1){//nao se podem eliminar jogadores dentro de equipas dentro de competicoes
+                    if(info.backHistory.length === 0){//so se pode editar o principal
+                        /* Editar */
+                        tableCell = document.createElement("td");
+                        const editAnchor = document.createElement('a')
+                        editAnchor.href = `javascript: info.editRow(${id})`//Alterar consoante necessário
+                        editAnchor.innerHTML = '<i class="fa-solid fa-pencil seeDetails"></i>'
+                        tableCell.appendChild(editAnchor)
+                        tr.appendChild(tableCell)
+                    }
+                    
+                    /* Remover */
+                    tableCell = document.createElement("td");
+                    const deleteAnchor = document.createElement('a')
+                    deleteAnchor.href = `javascript: info.removeRow(${id})`//Alterar consoante necessário
+                    deleteAnchor.innerHTML = '<i class="fa-solid fa-trash-can seeDetails"></i>'
+                    tableCell.appendChild(deleteAnchor)
+                    tr.appendChild(tableCell)
+                }
+                break;
+        }
+    }else{//cabecalho
+        var tab = navLinkName()
+        if(info.backHistory.length === 0){//nao se pode adicionar nada a filhos
+            switch(tab){ //has child nao funciona pois nao existem arrays nos cabecalhos, se tiver duvidas verificar (Array.isArray(content))
+                case 'Competitions':
+                    tableCell = document.createElement("th");
+                    tableCell.textContent = 'Add Teams'
+                    tr.appendChild(tableCell)
+                    break;
+                case 'Teams':
+                    tableCell = document.createElement("th");
+                    tableCell.textContent = 'Add Players'
+                    tr.appendChild(tableCell)
+                    break;
+            } 
+        }
+        switch(tab){//Countries nao alteram
+            case 'Competitions':
+            case 'Teams':
+            case 'Players':
+                if(info.backHistory.length <= 1){
+                    if(info.backHistory.length === 0){
+                        //Edit
+                        tableCell = document.createElement("th");
+                        tableCell.textContent = 'Edit'
+                        tr.appendChild(tableCell)
+                    }
+                    
+                    //Remove
+                    tableCell = document.createElement("th");
+                    tableCell.textContent = 'Remove'
+                    tr.appendChild(tableCell)
+                    
+                }
+                break;
+        }
     }
-
-    /* Editar */
-    tableCell = document.createElement("td");
-    const editAnchor = document.createElement('a')
-    /* editAnchor.href = `javascript: info.seeDetails(${id}, true)`//Alterar consoante necessário */
-    editAnchor.innerHTML = '<i class="fa-solid fa-pencil seeDetails"></i>'
-    tableCell.appendChild(editAnchor)
-    tr.appendChild(tableCell)
-
-    /* Remover */
-    tableCell = document.createElement("td");
-    const deleteAnchor = document.createElement('a')
-    /* deleteAnchor.href = `javascript: info.seeDetails(${id}, true)`//Alterar consoante necessário */
-    deleteAnchor.innerHTML = '<i class="fa-solid fa-trash-can seeDetails"></i>'
-    tableCell.appendChild(deleteAnchor)
-    tr.appendChild(tableCell)
-
+    
     return tr
 }
