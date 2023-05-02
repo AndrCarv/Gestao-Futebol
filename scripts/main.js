@@ -45,10 +45,10 @@ window.onload = function (event) {
 
     /** adicionar dados teste */
     info.addPlayer(1, 'Cristiano Ronaldo', '1985-02-05', 1, '1.85', 'AV');
-    info.addPlayer(2, 'Sergio Ramos', '1986-03-30', 2, '1.84', 'DC');
+    info.addPlayer(2, 'Sergio Ramos', '1986-03-30', 2, '1.84', 'DF');
     info.addPlayer(3, 'Harry Kane', '1993-07-28', 3, '1.88', 'AV');
     info.addPlayer(4, 'Kylian Mbappé', '1998-12-20', 4, '1.78', 'AV');
-    info.addPlayer(5, 'Manuel Neuer', '1986-03-27', 5, '1.9', 'GK');
+    info.addPlayer(5, 'Manuel Neuer', '1986-03-27', 5, '1.9', 'GR');
 
     info.addTeam(1, 'Benfica', 'SLB', 2, "Observações", []);
     info.addTeam(2, 'Sporting', 'SCP', 3, "Observações", []);
@@ -56,16 +56,16 @@ window.onload = function (event) {
 
     info.addTeam(4, 'Sporting de Braga', 'SCB', 3, "Observações", [
         new Player(1, 'João Silva', '1995-06-15', 1, 1.80, 'AV'),
-        new Player(2, 'Pedro Santos', '1998-03-21', 2, 1.75, 'MD'),
-        new Player(3, 'Ricardo Pereira', '1994-10-05', 3, 1.85, 'DE')
+        new Player(2, 'Pedro Santos', '1998-03-21', 2, 1.75, 'MC'),
+        new Player(3, 'Ricardo Pereira', '1994-10-05', 3, 1.85, 'DF')
     ]);
 
 
     info.addTeam(5, 'Gollaços.pt', 'SCB', 3, "Observações", [
         new Player(1, 'Ola', '1995-06-15', 1, 1.80, 'AV'),
-        new Player(2, 'Adeus', '1998-03-21', 2, 1.75, 'MD'),
-        new Player(3, 'Ve la', '1994-10-05', 3, 1.85, 'DE'),
-        new Player(3, 'Isso', '1994-10-05', 3, 1.85, 'DE')
+        new Player(2, 'Adeus', '1998-03-21', 2, 1.75, 'MC'),
+        new Player(3, 'Ve la', '1994-10-05', 3, 1.85, 'DF'),
+        new Player(3, 'Isso', '1994-10-05', 3, 1.85, 'DF')
     ]);
 
     /* meter olho centro */

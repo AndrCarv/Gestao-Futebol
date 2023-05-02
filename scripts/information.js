@@ -550,7 +550,7 @@ class Information {
                     }
 
                 }
-            break;
+                break;
         }
     }
 
@@ -617,7 +617,7 @@ class Information {
             case 'Teams':
 
                 var index = this.teams.findIndex(team => team.id === id)
-                if (index > -1){
+                if (index > -1) {
                     const team = this.teams[index];
                     hideErrors()
                     info.showForm('Editing');
@@ -636,7 +636,7 @@ class Information {
                         let acronymTemp = document.getElementById('teamAcronym').value.trim()
                         let countryTemp = parseInt(document.getElementById('teamCountry').value)
                         let observationTemp = document.getElementById('teamObservations').value.trim()
-                    
+
                         const newTeam = new Team(team.id, nomeTemp, acronymTemp, countryTemp, observationTemp, team.players)
                         //validar os dados
                         if (!newTeam.name || !newTeam.acronym || !newTeam.idCountry) {
@@ -677,7 +677,7 @@ class Information {
             case 'Players':
 
                 var index = this.unemployedPlayers.findIndex(player => player.id === id)
-                if (index > -1){
+                if (index > -1) {
                     const player = this.unemployedPlayers[index];
                     hideErrors()
 
@@ -706,22 +706,22 @@ class Information {
                             showError('playerCountry', "Por favor, preencha todos os campos obrigatórios.");
                             return;
                         }
-                
+
                         if (!onlyLetters(newPlayer.name)) {
                             showError('playerName', "O nome só deve possuir letras")
                             return
                         }
-                
+
                         if (!inInterval(newPlayer.name, 3, 20)) {
                             showError('playerName', "Introduza entre 3 a 20 caracteres")
                             return
                         }
-                
+
                         if (newPlayer.height < 1.5 || newPlayer.height > 2.4) {
                             showError('playerHeight', "Introduza um valor entre 1.50 a 2.40")
                             return
                         }
-                
+
                         const minMaxDate = document.getElementById("playerBirthDate")
                         if (!firstIsOlder(minMaxDate.min, newPlayer.birthDate) || !firstIsOlder(newPlayer.birthDate, minMaxDate.max)) {
                             showError('playerBirthDate', "Introduza uma data entre 1980 e 2007")
@@ -1030,22 +1030,22 @@ function showModal(title, message) {
  */
 
 function toggleFormButtons(currentAction) {
-    switch(currentAction){
+    switch (currentAction) {
         case 'Editing':
             document.getElementById('compAdd').style.display = 'none'
             document.getElementById('teamAdd').style.display = 'none'
             document.getElementById('playerAdd').style.display = 'none'
-        
+
             document.getElementById('compEdit').style.display = 'inline-block';
             document.getElementById('teamEdit').style.display = 'inline-block';
-            document.getElementById('playerEdit').style.display = 'inline-block';            
+            document.getElementById('playerEdit').style.display = 'inline-block';
             break;
         case 'Creating':
         default:
             document.getElementById('compAdd').style.display = ''
             document.getElementById('teamAdd').style.display = 'inline-block'
             document.getElementById('playerAdd').style.display = 'inline-block'
-        
+
             document.getElementById('compEdit').style.display = 'none';
             document.getElementById('teamEdit').style.display = 'none';
             document.getElementById('playerEdit').style.display = 'none';
