@@ -60,6 +60,14 @@ window.onload = function (event) {
         new Player(3, 'Ricardo Pereira', '1994-10-05', 3, 1.85, 'DE')
     ]);
 
+
+    info.addTeam(5, 'Gollaços.pt', 'SCB', 3, "Observações", [
+        new Player(1, 'Ola', '1995-06-15', 1, 1.80, 'AV'),
+        new Player(2, 'Adeus', '1998-03-21', 2, 1.75, 'MD'),
+        new Player(3, 'Ve la', '1994-10-05', 3, 1.85, 'DE'),
+        new Player(3, 'Isso', '1994-10-05', 3, 1.85, 'DE')
+    ]);
+
     /* meter olho centro */
 
 
@@ -68,9 +76,14 @@ window.onload = function (event) {
 
     info.addCompetition(3, 'Liga Europa', '2023', info.teams[3], true, [
         info.teams[2],
-        info.teams[3]
+        info.teams[3],
+        info.teams[4]
     ]); //teste liga criada com o SCB e FCP la dentro
 
+    //teste das equipas e competicoes
+    info.teams.pop()
+
+    
     window.info = info;
 };
 
@@ -149,7 +162,7 @@ function tableRowConditions(property, content){
 
 function addEditRemoveIcons(tr, id, headerFormat){
     var tableCell = null
-    
+
     if(!headerFormat){//celula
         switch(navLinkName()){
             case 'Competitions':

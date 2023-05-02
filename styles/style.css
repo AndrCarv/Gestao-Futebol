@@ -126,7 +126,7 @@ th {
 }
 
 /* Tamanho fontes dos forms */
-.form input, .form select, .form button{
+.form input, .form select, .form button, .form textarea{
     font-size: 2rem;
 }
 
@@ -147,7 +147,7 @@ th {
 }
 
 @media screen and (min-width: 992px){
-    .form input, .form select, .form button{
+    .form input, .form select, .form button, .form textarea{
         font-size: 1rem;
     }
 

@@ -10,7 +10,7 @@
 * @property {Player[]} unemployedPlayers - Array de objetos do tipo player, guarda jogadores sem equipa
 * @property {Team[]} teams - Array de objetos do tipo player, guarda equipas e os seus jogadores
 * @property {Competition[]} competitions - Array de objetos do tipo player, guarda competições com equipas conforme adicionadas
-* @property {Array} backHistory - Array de objetos do tipo player, guarda competições com equipas conforme adicionadas [nome, Array]
+* @property {Array} backHistory - Array de objetos do tipo player, guarda competições com equipas conforme adicionadas [nome(opcional), Array, indexPai(opcional)]
 */
 class Information {
     constructor(id) {
@@ -83,7 +83,7 @@ class Information {
         this.resetHistory()//evitar problemas
     }
 
-    showTeams() {
+    showTeams(backHistory) {
         /** Actualizar a navegação */
         removeActiveClass()
         addActive('teamsAnchor')
@@ -101,7 +101,8 @@ class Information {
 
         /* Verificar se há historico */
         if (this.backHistory.length > 0) {
-            const lastHistory = this.backHistory[this.backHistory.length - 1]
+            /* const lastHistory = this.backHistory[this.backHistory.length - 1] */
+            const lastHistory = backHistory
             /** Alternar conteudo */
             this.findCompetitionTeams(lastHistory[0], lastHistory[1])
         } else {
@@ -157,27 +158,38 @@ class Information {
     seeDetails(id, isWinner) {
         switch (navLinkName()) {
             case 'Teams':
-                const indexPlayer = this.teams.findIndex(team => team.id === id)
-                if (indexPlayer > -1) {
-                    if (this.teams[indexPlayer].players.length === 0) {
+                let indexTeam
+                let teamArray
+                if (this.backHistory.length === 0) {//estamos nas equipas
+                    teamArray = this.teams
+                    indexTeam = teamArray.findIndex(team => team.id === id)
+                }
+                else {//estamos na competicao de uma equipa
+                    var lastHistory = this.backHistory.slice(-1)[0]//ultima posicao do historico altera-lo
+                    const compArray = lastHistory[1] //array
+                    const compIndex = lastHistory[2] //index do pai
+                    teamArray = compArray[compIndex].teams//equipas da liga
+
+                    indexTeam = teamArray.findIndex(team => team.id === id)
+                }
+
+                if (indexTeam > -1) {
+                    if (teamArray[indexTeam].players.length === 0) {
                         /* console.error("Registos não encontrados") */
-                        break
+                        return
                     }
 
-                    /* Magia: sendo que os nomes das equipas e ligas e etc são úncios */
-                    const compName = document.querySelector('#dynamicView').textContent
-                    const indexCompetition = this.competitions.findIndex(competition => competition.name === compName)
-                    if(indexCompetition > -1){
+                    //verifica se é equipa dentro ou fora de competição
+                    if (lastHistory && lastHistory[2] > -1) {
                         //guarda o anterior/presente
-                        this.backHistory.push([compName, this.competitions[indexCompetition].teams])
+                        this.backHistory.push([this.competitions[lastHistory[2]].name, this.competitions[lastHistory[2]].teams])
                         //mostra o asseguir
-                    }else{
+                    } else {
                         //então é porque está na lista de equipas, não numa comeptição
                         this.backHistory.push([undefined, this.teams])
                     }
-                    /* Fim da magia do historico */
 
-                    this.findTeamPlayers(this.teams[indexPlayer].name, this.teams[indexPlayer].players)
+                    this.findTeamPlayers(teamArray[indexTeam].name, teamArray[indexTeam].players)
                     removeActiveClass()
                     addActive('playersAnchor')
                     activateTab()
@@ -186,23 +198,21 @@ class Information {
                 }
                 break;
             case 'Competitions':
-                const indexTeam = this.competitions.findIndex(competition => competition.id === id)
-                if (indexTeam > -1) {
-                    if (this.competitions[indexTeam].teams.length === 0) {
+                const indexComp = this.competitions.findIndex(competition => competition.id === id)
+                if (indexComp > -1) {
+                    if (this.competitions[indexComp].teams.length === 0) {
                         /* console.error("Registos não encontrados") */
                         break
                     }
 
+                    //guarda o anterior/presente
+                    this.backHistory.push([undefined, this.competitions, indexComp])
+                    //mostra o asseguir
+
                     if (!isWinner) {/* Caso seja para mostrar o vencedor de um torneio */
-                        //guarda o anterior/presente
-                        this.backHistory.push([undefined, this.competitions])
-                        //mostra o asseguir
-                        this.findCompetitionTeams(this.competitions[indexTeam].name, this.competitions[indexTeam].teams)
+                        this.findCompetitionTeams(this.competitions[indexComp].name, this.competitions[indexComp].teams)
                     } else {/* o backHistory recebe o nome de apresentação e o array */
-                        //guarda o anterior/presente
-                        this.backHistory.push([undefined, this.competitions])
-                        //mostra o asseguir
-                        this.findCompetitionTeams(this.competitions[indexTeam].winner.name, [this.competitions[indexTeam].winner])
+                        this.findCompetitionTeams(this.competitions[indexComp].winner.name, [this.competitions[indexComp].winner])
                     }
                 }
                 removeActiveClass()
@@ -230,10 +240,17 @@ class Information {
     }
 
     /* Mostra o form*/
-    showForm() {
+    showForm(action, view) {
         alternateTabs(1)
         showOneHideOther('forms', 'contentTable')
-        updateDynamicAction('Creating')
+        const currentAction = action || 'Creating'
+        updateDynamicAction(currentAction)
+        toggleFormButtons(currentAction)
+
+        //edit something
+        if (view) {
+            document.querySelector('#dynamicView').textContent = view
+        }
 
         //* Select countries working */
         const firstCountryConversion = document.querySelectorAll('.contriesSelect option')/* encontrar quantas opções têm os selects dos paises  */
@@ -267,16 +284,16 @@ class Information {
     }
 
     selectPreviousTab() {
+        const backHistory = this.backHistory.pop()
         switch (navLinkName()) {
             case 'Teams':
                 this.showCompetitions()
                 break;
             case 'Players':
-                this.showTeams()
+                this.showTeams(backHistory)//aqui é necessário
                 break;
         }
-        this.backHistory.pop()
-        if(this.backHistory.length === 0){
+        if (this.backHistory.length === 0) {
             disableTab()
             showTab('formTab')
         }
@@ -298,8 +315,8 @@ class Information {
         this.unemployedPlayers.push(player);
     }
 
-    addTeam(id, name, sigla, players, idCountry, description) {
-        const team = new Team(id, name, sigla, players, idCountry, description)
+    addTeam(id, name, acronym, players, idCountry, description) {
+        const team = new Team(id, name, acronym, players, idCountry, description)
         this.teams.push(team)
     }
 
@@ -330,7 +347,7 @@ class Information {
 
         //validar os dados
         if (!name || !birthDate || !idCountry || !height || !position) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
+            showError('playerCountry', "Por favor, preencha todos os campos obrigatórios.");
             return;
         }
 
@@ -355,11 +372,13 @@ class Information {
             return
         }
 
-        /* Limpar form */
-        document.querySelector('#playerForm form').reset()
 
         /* Criar objeto */
         const p = new Player(id, name, birthDate, idCountry, height, position, [])
+
+        /* Limpar form */
+        document.querySelector('#playerForm form').reset()
+
         this.unemployedPlayers.push(p)
         console.log(info.unemployedPlayers);
         this.showPlayers()
@@ -378,7 +397,7 @@ class Information {
 
         //validar os dados
         if (!name || !acronym || !idCountry) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
+            showError('teamObservations', "Por favor, preencha todos os campos obrigatórios.");
             return;
         }
 
@@ -403,7 +422,7 @@ class Information {
         }
 
         if (!inInterval(description, 0, 30)) {
-            showError('teamObservations', "Introduza entre 0 a 30 caracteres")
+            showError('teamObservations', "Introduza no máximo 30 caracteres")
             return
         }
 
@@ -429,7 +448,7 @@ class Information {
 
         //validar o nome e date
         if (!name || !date) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
+            showError('generalError', "Por favor, preencha todos os campos obrigatórios.");
             return;
         }
 
@@ -476,14 +495,14 @@ class Information {
                 }
                 break;
             case 'Teams':
-                if(this.backHistory.length === 0){//estamos a mexer nas equipas de fora?
+                if (this.backHistory.length === 0) {//estamos a mexer nas equipas de fora?
                     var index = this.teams.findIndex(team => team.id === id)
                     if (index > -1) {
                         showModal("Delete?", "Are you sure you want to delete the team '" + this.teams[index].name + "' ?")
                         this.teams.splice(index, 1)
                         this.showTeams()
                     }
-                }else{//com historico
+                } else {//com historico
                     const name = document.querySelector('#dynamicView').textContent
                     //(-1) - ultima pos do array | [1] array do historico
                     const lastHistory = this.backHistory.slice(-1)[0][1]
@@ -498,18 +517,18 @@ class Information {
                         //Mostrar equipas dentro da competição
                         this.findCompetitionTeams(name, array)
                     }
-                    
+
                 }
                 break;
             case 'Players':
-                if(this.backHistory.length === 0){//estamos a mexer nos jogadores de fora?
+                if (this.backHistory.length === 0) {//estamos a mexer nos jogadores de fora?
                     var index = this.unemployedPlayers.findIndex(team => team.id === id)
                     if (index > -1) {
                         showModal("Delete?", "Are you sure you want to delete the player '" + this.unemployedPlayers[index].name + "' ?")
                         this.unemployedPlayers.splice(index, 1)
                         this.showPlayers()
                     }
-                }else{//com historico
+                } else {//com historico
                     const name = document.querySelector('#dynamicView').textContent
                     //(-1) - ultima pos do array | [1] array do historico
                     const lastHistory = this.backHistory.slice(-1)[0][1]
@@ -519,7 +538,7 @@ class Information {
                     var index = array.findIndex(item => item.id === id)
                     if (index > -1) {
                         showModal("Fire?", "Are you sure you want to fire the player '" + array[index].name + "' from '" + name + "' ?")
-                        
+
                         //jogador despedido muda de sitio, nao eliminado
                         let player = array.splice(index, 1)[0]
                         //o id passa a ser a seguir ao id do ultimo jogador
@@ -529,9 +548,9 @@ class Information {
 
                         this.findCompetitionTeams(name, array)
                     }
-                    
+
                 }
-                break;
+            break;
         }
     }
 
@@ -540,20 +559,179 @@ class Information {
         switch (navLinkName()) {
             case 'Competitions':
                 /* Encontrar id */
-                /* Alterar para o form */
-                /* Alterar o nome e ação do form */
-                /* Receber informação (talvez usar coisas da função de criar) */
-                /* Preencher os campos do form com os valores guardados */
-                /* Validar a formatação da informação */
-                /* Fazer as alterações no array */
-                /* Verificar se a ação e título do form ficam corretos depois */
-                /* Chamar show competição (neste caso) */
+                var index = this.competitions.findIndex(competition => competition.id === id)
+                if (index > -1) {
+                    const comp = this.competitions[index];
+                    hideErrors()
+                    info.showForm('Editing');
+
+                    /* Preencher os campos do form com os valores guardados */
+
+                    document.getElementById('competitionName').value = comp.name;
+                    document.getElementById('competitionEdition').value = comp.edition;
+                    const compEditButton = document.getElementById('compEdit')
+
+                    //funcao handle da informaçao
+                    const editCompetition = (event) => {
+                        compEditButton.removeEventListener('click', editCompetition);
+
+                        //criar variaveis para receber nome e edition e usar o construtor ja criado, feito
+                        let nomeTemp = document.getElementById('competitionName').value.trim();
+                        let editionTemp = document.getElementById('competitionEdition').value.trim();
+
+                        const newCompetition = new Competition(comp.id, nomeTemp, editionTemp, comp.winner, comp.state, comp.teams);
+
+                        /* Validar a formatação da informação */
+
+
+                        if (!newCompetition.name || !newCompetition.edition) {
+                            showError('generalError', "Por favor, preencha todos os campos obrigatórios.");
+                            return;
+                        }
+
+                        if (!onlyLetters(newCompetition.name)) {
+                            showError('competitionName', 'O nome deve levar só letras');
+                            return;
+                        }
+
+                        if (!inInterval(newCompetition.name, 3, 20)) {
+                            showError('competitionName', 'Introduza entre 3 a 20 caracteres');
+                            return;
+                        }
+
+                        const dateLimits = document.getElementById('competitionEdition');
+                        if (newCompetition.edition < dateLimits.min || newCompetition.edition > dateLimits.max) {
+                            showError('competitionEdition', 'Só possivel criar uma edição com 2 anos de diferença do ano currente');
+                            return;
+                        }
+
+                        /* Fazer as alterações no array */
+                        this.competitions[index] = newCompetition;
+                        /* Chamar show competição (neste caso) */
+                        info.showCompetitions();
+                    };
+                    compEditButton.addEventListener('click', editCompetition);
+                }
                 break;
+
             case 'Teams':
 
+                var index = this.teams.findIndex(team => team.id === id)
+                if (index > -1){
+                    const team = this.teams[index];
+                    hideErrors()
+                    info.showForm('Editing');
+
+                    /* Preencher os campos do form com os valores guardados */
+                    document.getElementById('teamName').value = team.name;
+                    document.getElementById('teamAcronym').value = team.acronym;
+                    document.getElementById('teamCountry').value = team.idCountry;
+                    document.getElementById('teamObservations').value = team.description;
+
+                    const teamEditButton = document.getElementById('teamEdit')
+                    const editTeam = (event) => {
+
+                        teamEditButton.removeEventListener('click', editTeam)
+                        let nomeTemp = document.getElementById('teamName').value.trim()
+                        let acronymTemp = document.getElementById('teamAcronym').value.trim()
+                        let countryTemp = parseInt(document.getElementById('teamCountry').value)
+                        let observationTemp = document.getElementById('teamObservations').value.trim()
+                    
+                        const newTeam = new Team(team.id, nomeTemp, acronymTemp, countryTemp, observationTemp, team.players)
+                        //validar os dados
+                        if (!newTeam.name || !newTeam.acronym || !newTeam.idCountry) {
+                            showError('teamObservations', "Por favor, preencha todos os campos obrigatórios.");
+                            return;
+                        }
+
+                        if (!onlyLetters(newTeam.name)) {
+                            showError('teamName', "O nome só deve possuir letras")
+                            return
+                        }
+
+                        if (!inInterval(newTeam.name, 3, 20)) {
+                            showError('teamName', "Introduza entre 3 a 20 caracteres")
+                            return
+                        }
+
+                        if (!onlyLetters(newTeam.acronym)) {
+                            showError('teamAcronym', "O acronimo leva só letras")
+                            return
+                        }
+
+                        if (!inInterval(newTeam.acronym, 3, 4)) {
+                            showError('teamAcronym', "Introduza entre 3 a 4 caracteres")
+                            return
+                        }
+
+                        if (!inInterval(newTeam.description, 0, 30)) {
+                            showError('teamObservations', "Introduza no máximo 30 caracteres")
+                            return
+                        }
+                        this.teams[index] = newTeam
+                        info.showTeams();
+                    };
+                    teamEditButton.addEventListener('click', editTeam);
+                }
                 break;
             case 'Players':
 
+                var index = this.unemployedPlayers.findIndex(player => player.id === id)
+                if (index > -1){
+                    const player = this.unemployedPlayers[index];
+                    hideErrors()
+
+                    info.showForm('Editing');
+
+                    /* Preencher os campos do form com os valores guardados */
+                    document.getElementById('playerName').value = player.name;
+                    document.getElementById('playerBirthDate').value = player.birthDate;
+                    document.getElementById('playerHeight').value = player.height;
+                    document.getElementById('playerPosition').value = player.position;
+                    document.getElementById('playerCountry').value = player.idCountry;
+
+                    const playerEditButton = document.getElementById('playerEdit')
+                    const editPlayer = (event) => {
+                        playerEditButton.removeEventListener('click', editPlayer)
+                        let nomeTemp = document.getElementById('playerName').value.trim()
+                        let birthdateTemp = document.getElementById('playerBirthDate').value.trim()
+                        let heightTemp = document.getElementById('playerHeight').value.trim()
+                        let posTemp = document.querySelector('#playerPosition').value
+                        let countryTemp = parseInt(document.getElementById('playerCountry').value)
+
+                        const newPlayer = new Player(player.id, nomeTemp, birthdateTemp, countryTemp, heightTemp, posTemp)
+                        console.log(newPlayer)
+                        //validar os dados
+                        if (!newPlayer.name || !newPlayer.birthDate || !newPlayer.idCountry || !newPlayer.height || !newPlayer.position) {
+                            showError('playerCountry', "Por favor, preencha todos os campos obrigatórios.");
+                            return;
+                        }
+                
+                        if (!onlyLetters(newPlayer.name)) {
+                            showError('playerName', "O nome só deve possuir letras")
+                            return
+                        }
+                
+                        if (!inInterval(newPlayer.name, 3, 20)) {
+                            showError('playerName', "Introduza entre 3 a 20 caracteres")
+                            return
+                        }
+                
+                        if (newPlayer.height < 1.5 || newPlayer.height > 2.4) {
+                            showError('playerHeight', "Introduza um valor entre 1.50 a 2.40")
+                            return
+                        }
+                
+                        const minMaxDate = document.getElementById("playerBirthDate")
+                        if (!firstIsOlder(minMaxDate.min, newPlayer.birthDate) || !firstIsOlder(newPlayer.birthDate, minMaxDate.max)) {
+                            showError('playerBirthDate', "Introduza uma data entre 1980 e 2007")
+                            return
+                        }
+                        this.unemployedPlayers[index] = newPlayer
+                        info.showPlayers();
+                    };
+                    playerEditButton.addEventListener('click', editPlayer);
+                }
                 break;
         }
     }
@@ -675,7 +853,7 @@ function updateDynamicAction(action) {
  * e retorna um objeto com esse numero de chaves
  */
 
-function getEmptyObject(){
+function getEmptyObject() {
     var emptyObject = {}
     var objectLength = 0
     switch (navLinkName()) {
@@ -691,7 +869,7 @@ function getEmptyObject(){
     }
 
     //object keys, chaves enumeraveis de um objeto
-    for(let i = 0; i < objectLength; i++){
+    for (let i = 0; i < objectLength; i++) {
         emptyObject[i] = ""
     }
 
@@ -838,7 +1016,7 @@ function showError(id, message) {
 
 /* Mostrar modal com titulo e mensagem*/
 
-function showModal(title, message){
+function showModal(title, message) {
     const myModal = document.querySelector('#modal')
     document.querySelector('#modalTitle').textContent = title || "Confirmation"
     document.querySelector('#modalMessage').textContent = message || "Are you sure you want to save the changes made?"
@@ -846,3 +1024,36 @@ function showModal(title, message){
     const modal = new bootstrap.Modal(myModal)//bootstrap
     modal.show()
 }
+
+/**
+ *Funcao do botao 
+ */
+
+function toggleFormButtons(currentAction) {
+    switch(currentAction){
+        case 'Editing':
+            document.getElementById('compAdd').style.display = 'none'
+            document.getElementById('teamAdd').style.display = 'none'
+            document.getElementById('playerAdd').style.display = 'none'
+        
+            document.getElementById('compEdit').style.display = 'inline-block';
+            document.getElementById('teamEdit').style.display = 'inline-block';
+            document.getElementById('playerEdit').style.display = 'inline-block';            
+            break;
+        case 'Creating':
+        default:
+            document.getElementById('compAdd').style.display = ''
+            document.getElementById('teamAdd').style.display = 'inline-block'
+            document.getElementById('playerAdd').style.display = 'inline-block'
+        
+            document.getElementById('compEdit').style.display = 'none';
+            document.getElementById('teamEdit').style.display = 'none';
+            document.getElementById('playerEdit').style.display = 'none';
+            break;
+    }
+}
+
+/*
+toggleSubmitButtons('compEdit', 'compAdd');
+toggleSubmitButtons('compAdd', 'compEdit');
+*/
