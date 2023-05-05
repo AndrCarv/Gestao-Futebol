@@ -121,6 +121,7 @@ class Information {
         showTab('showTab')
         if (this.backHistory.length === 0) {//se nao houver historico, mostrar form
             disableTab()
+
             showTab('formTab')
         }
 
@@ -241,6 +242,7 @@ class Information {
 
     /* Mostra o form*/
     showForm(action, view) {
+        hideErrors(); //vai esconder os erros das validaçoes
         alternateTabs(1)
         showOneHideOther('forms', 'contentTable')
         const currentAction = action || 'Creating'
@@ -330,7 +332,6 @@ class Information {
      */
 
     addNewPlayer() {
-        hideErrors()
         //const id = generateId(); experiencia para criar o id
         const name = document.getElementById("playerName").value.trim();
         const birthDate = document.getElementById("playerBirthDate").value.trim();
@@ -346,32 +347,16 @@ class Information {
         const id = info.unemployedPlayers.length + 1;
 
         //validar os dados
-        if (!name || !birthDate || !idCountry || !height || !position) {
-            showError('playerCountry', "Por favor, preencha todos os campos obrigatórios.");
+
+        if (!validatePlayer(name, birthDate, idCountry, height, position)) {
             return;
         }
-
-        if (!onlyLetters(name)) {
-            showError('playerName', "O nome só deve possuir letras")
-            return
-        }
-
-        if (!inInterval(name, 3, 20)) {
-            showError('playerName', "Introduza entre 3 a 20 caracteres")
-            return
-        }
-
-        if (height < 1.5 || height > 2.4) {
-            showError('playerHeight', "Introduza um valor entre 1.50 a 2.40")
-            return
-        }
-
+        
         const minMaxDate = document.getElementById("playerBirthDate")
         if (!firstIsOlder(minMaxDate.min, birthDate) || !firstIsOlder(birthDate, minMaxDate.max)) {
             showError('playerBirthDate', "Introduza uma data entre 1980 e 2007")
             return
         }
-
 
         /* Criar objeto */
         const p = new Player(id, name, birthDate, idCountry, height, position, [])
@@ -385,7 +370,6 @@ class Information {
     }
 
     addNewTeam() {
-        hideErrors()
         const name = document.getElementById("teamName").value.trim();
         const acronym = document.getElementById("teamAcronym").value.trim();
 
@@ -396,34 +380,9 @@ class Information {
         const players = [];
 
         //validar os dados
-        if (!name || !acronym || !idCountry) {
-            showError('teamObservations', "Por favor, preencha todos os campos obrigatórios.");
+
+        if (!validateTeam(name, acronym, idCountry, description)) {
             return;
-        }
-
-        if (!onlyLetters(name)) {
-            showError('teamName', "O nome só deve possuir letras")
-            return
-        }
-
-        if (!inInterval(name, 3, 20)) {
-            showError('teamName', "Introduza entre 3 a 20 caracteres")
-            return
-        }
-
-        if (!onlyLetters(acronym)) {
-            showError('teamAcronym', "O acronimo leva só letras")
-            return
-        }
-
-        if (!inInterval(acronym, 3, 4)) {
-            showError('teamAcronym', "Introduza entre 3 a 4 caracteres")
-            return
-        }
-
-        if (!inInterval(description, 0, 30)) {
-            showError('teamObservations', "Introduza no máximo 30 caracteres")
-            return
         }
 
         /* Limpar form */
@@ -437,7 +396,6 @@ class Information {
     }
 
     addNewCompetition() {
-        hideErrors()
         const id = info.competitions.length + 1;
         //trim para remover espaço branco a frente e no fim, no caso for inserido espaços
         const name = document.getElementById("competitionName").value.trim();
@@ -447,27 +405,9 @@ class Information {
         const state = false;//ainda nao acabou
 
         //validar o nome e date
-        if (!name || !date) {
-            showError('generalError', "Por favor, preencha todos os campos obrigatórios.");
+        if (!validateCompetition(name, date)) {
             return;
         }
-
-        if (!onlyLetters(name)) {//esta a detetar isto quando damos espaço a meio do nome
-            showError('competitionName', "O nome deve levar só letras")
-            return
-        }
-
-        if (!inInterval(name, 3, 20)) {
-            showError('competitionName', "Introduza entre 3 a 20 caracteres")
-            return
-        }
-
-        const dateLimits = document.getElementById("competitionEdition")
-        if (date < dateLimits.min || date > dateLimits.max) {
-            showError('competitionEdition', "Só possivel criar uma edição com 2 anos de diferença do ano currente")
-            return
-        }
-
         /* Limpar form */
         document.querySelector('#competitionForm form').reset()
 
@@ -562,7 +502,6 @@ class Information {
                 var index = this.competitions.findIndex(competition => competition.id === id)
                 if (index > -1) {
                     const comp = this.competitions[index];
-                    hideErrors()
                     info.showForm('Editing');
 
                     /* Preencher os campos do form com os valores guardados */
@@ -582,32 +521,18 @@ class Information {
                         const newCompetition = new Competition(comp.id, nomeTemp, editionTemp, comp.winner, comp.state, comp.teams);
 
                         /* Validar a formatação da informação */
-
-
-                        if (!newCompetition.name || !newCompetition.edition) {
-                            showError('generalError', "Por favor, preencha todos os campos obrigatórios.");
+                        if (!validateCompetition(newCompetition.name, newCompetition.edition)) {
+                            compEditButton.removeEventListener('click', editCompetition);
+                            compEditButton.addEventListener('click', editCompetition);
                             return;
                         }
 
-                        if (!onlyLetters(newCompetition.name)) {
-                            showError('competitionName', 'O nome deve levar só letras');
-                            return;
-                        }
-
-                        if (!inInterval(newCompetition.name, 3, 20)) {
-                            showError('competitionName', 'Introduza entre 3 a 20 caracteres');
-                            return;
-                        }
-
-                        const dateLimits = document.getElementById('competitionEdition');
-                        if (newCompetition.edition < dateLimits.min || newCompetition.edition > dateLimits.max) {
-                            showError('competitionEdition', 'Só possivel criar uma edição com 2 anos de diferença do ano currente');
-                            return;
-                        }
+                        showModal("Edit?", "Are you sure you want to edit this competition?")
 
                         /* Fazer as alterações no array */
                         this.competitions[index] = newCompetition;
                         /* Chamar show competição (neste caso) */
+                        document.querySelector('#teamForm form').reset()
                         info.showCompetitions();
                     };
                     compEditButton.addEventListener('click', editCompetition);
@@ -619,7 +544,6 @@ class Information {
                 var index = this.teams.findIndex(team => team.id === id)
                 if (index > -1) {
                     const team = this.teams[index];
-                    hideErrors()
                     info.showForm('Editing');
 
                     /* Preencher os campos do form com os valores guardados */
@@ -639,35 +563,15 @@ class Information {
 
                         const newTeam = new Team(team.id, nomeTemp, acronymTemp, countryTemp, observationTemp, team.players)
                         //validar os dados
-                        if (!newTeam.name || !newTeam.acronym || !newTeam.idCountry) {
-                            showError('teamObservations', "Por favor, preencha todos os campos obrigatórios.");
+
+                        if (!validateTeam(newTeam.name, newTeam.acronym, newTeam.idCountry, newTeam.description)) {
+                            teamEditButton.removeEventListener('click', teamEditButton);
+                            teamEditButton.addEventListener('click', teamEditButton);
                             return;
                         }
+                        
+                        showModal("Edit?", "Are you sure you want to edit this team?")
 
-                        if (!onlyLetters(newTeam.name)) {
-                            showError('teamName', "O nome só deve possuir letras")
-                            return
-                        }
-
-                        if (!inInterval(newTeam.name, 3, 20)) {
-                            showError('teamName', "Introduza entre 3 a 20 caracteres")
-                            return
-                        }
-
-                        if (!onlyLetters(newTeam.acronym)) {
-                            showError('teamAcronym', "O acronimo leva só letras")
-                            return
-                        }
-
-                        if (!inInterval(newTeam.acronym, 3, 4)) {
-                            showError('teamAcronym', "Introduza entre 3 a 4 caracteres")
-                            return
-                        }
-
-                        if (!inInterval(newTeam.description, 0, 30)) {
-                            showError('teamObservations', "Introduza no máximo 30 caracteres")
-                            return
-                        }
                         this.teams[index] = newTeam
                         info.showTeams();
                     };
@@ -679,8 +583,6 @@ class Information {
                 var index = this.unemployedPlayers.findIndex(player => player.id === id)
                 if (index > -1) {
                     const player = this.unemployedPlayers[index];
-                    hideErrors()
-
                     info.showForm('Editing');
 
                     /* Preencher os campos do form com os valores guardados */
@@ -692,6 +594,7 @@ class Information {
 
                     const playerEditButton = document.getElementById('playerEdit')
                     const editPlayer = (event) => {
+
                         playerEditButton.removeEventListener('click', editPlayer)
                         let nomeTemp = document.getElementById('playerName').value.trim()
                         let birthdateTemp = document.getElementById('playerBirthDate').value.trim()
@@ -702,31 +605,15 @@ class Information {
                         const newPlayer = new Player(player.id, nomeTemp, birthdateTemp, countryTemp, heightTemp, posTemp)
                         console.log(newPlayer)
                         //validar os dados
-                        if (!newPlayer.name || !newPlayer.birthDate || !newPlayer.idCountry || !newPlayer.height || !newPlayer.position) {
-                            showError('playerCountry', "Por favor, preencha todos os campos obrigatórios.");
+
+                        if (!validatePlayer(newPlayer.name, newPlayer.birthDate, newPlayer.idCountry, newPlayer.height, newPlayer.position)) {
+                            playerEditButton.removeEventListener('click', playerEditButton);
+                            playerEditButton.addEventListener('click', playerEditButton);
                             return;
                         }
 
-                        if (!onlyLetters(newPlayer.name)) {
-                            showError('playerName', "O nome só deve possuir letras")
-                            return
-                        }
+                        showModal("Edit?", "Are you sure you want to edit this player?")
 
-                        if (!inInterval(newPlayer.name, 3, 20)) {
-                            showError('playerName', "Introduza entre 3 a 20 caracteres")
-                            return
-                        }
-
-                        if (newPlayer.height < 1.5 || newPlayer.height > 2.4) {
-                            showError('playerHeight', "Introduza um valor entre 1.50 a 2.40")
-                            return
-                        }
-
-                        const minMaxDate = document.getElementById("playerBirthDate")
-                        if (!firstIsOlder(minMaxDate.min, newPlayer.birthDate) || !firstIsOlder(newPlayer.birthDate, minMaxDate.max)) {
-                            showError('playerBirthDate', "Introduza uma data entre 1980 e 2007")
-                            return
-                        }
                         this.unemployedPlayers[index] = newPlayer
                         info.showPlayers();
                     };
@@ -1053,7 +940,94 @@ function toggleFormButtons(currentAction) {
     }
 }
 
-/*
-toggleSubmitButtons('compEdit', 'compAdd');
-toggleSubmitButtons('compAdd', 'compEdit');
-*/
+/**
+ * Verificações dos dados
+ */
+
+
+function validateCompetition(name, date) {
+    if (!name || !date) {
+        showError('generalError', "Por favor, preencha todos os campos obrigatórios.");
+        return false;
+    }
+
+    if (!onlyLetters(name)) {
+        showError('competitionName', "O nome deve levar só letras")
+        return false;
+    }
+
+    if (!inInterval(name, 3, 20)) {
+        showError('competitionName', "Introduza entre 3 a 20 caracteres")
+        return false;
+    }
+
+    const dateLimits = document.getElementById("competitionEdition");
+    if (date < dateLimits.min || date > dateLimits.max) {
+        showError('competitionEdition', "Só possivel criar uma edição com 2 anos de diferença do ano currente")
+        return false;
+    }
+
+    return true;
+}
+
+function validateTeam(name, acronym, idCountry, description) {
+    if (!name || !acronym || !idCountry) {
+        showError('teamObservations', "Por favor, preencha todos os campos obrigatórios.");
+        return false;
+    }
+
+    if (!onlyLetters(name)) {
+        showError('teamName', "O nome só deve possuir letras")
+        return false;
+    }
+
+    if (!inInterval(name, 3, 20)) {
+        showError('teamName', "Introduza entre 3 a 20 caracteres")
+        return false;
+    }
+
+    if (!onlyLetters(acronym)) {
+        showError('teamAcronym', "O acronimo leva só letras")
+        return false;
+    }
+
+    if (!inInterval(acronym, 3, 4)) {
+        showError('teamAcronym', "Introduza entre 3 a 4 caracteres")
+        return false;
+    }
+
+    if (!inInterval(description, 0, 30)) {
+        showError('teamObservations', "Introduza no máximo 30 caracteres")
+        return false;
+    }
+    return true;
+}
+
+function validatePlayer(name, birthDate, idCountry, height, position) {
+    if (!name || !birthDate || !idCountry || !height || !position) {
+        showError('playerCountry', "Por favor, preencha todos os campos obrigatórios.");
+        return false;
+    }
+
+    if (!onlyLetters(name)) {
+        showError('playerName', "O nome só deve possuir letras")
+        return false;
+    }
+
+    if (!inInterval(name, 3, 20)) {
+        showError('playerName', "Introduza entre 3 a 20 caracteres")
+        return false;
+    }
+
+    if (height < 1.5 || height > 2.4) {
+        showError('playerHeight', "Introduza um valor entre 1.50 a 2.40")
+        return false;
+    }
+
+    const minMaxDate = document.getElementById("playerBirthDate")
+    if (!firstIsOlder(minMaxDate.min, birthDate) || !firstIsOlder(birthDate, minMaxDate.max)) {
+        showError('playerBirthDate', "Introduza uma data entre 1980 e 2007")
+        return false;
+    }
+    return true;
+}
