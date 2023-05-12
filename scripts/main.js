@@ -50,9 +50,19 @@ window.onload = function (event) {
     info.addPlayer(4, 'Kylian Mbappé', '1998-12-20', 4, '1.78', 'AV');
     info.addPlayer(5, 'Manuel Neuer', '1986-03-27', 5, '1.9', 'GR');
 
-    info.addTeam(1, 'Benfica', 'SLB', 2, "Observações", []);
+    info.addTeam(1, 'Benfica', 'SLB', 2, "Observações", [
+        new Player(1, 'Filipe Macaco', '1995-06-15', 1, 1.80, 'AV'),
+        new Player(2, 'Rodrigo Filho', '1998-03-21', 2, 1.75, 'MC'),
+        new Player(3, 'Hugo Digas', '1994-10-05', 3, 1.85, 'DF')
+    ]);
+
     info.addTeam(2, 'Sporting', 'SCP', 3, "Observações", []);
-    info.addTeam(3, 'Porto', 'FCP', 1, "Observações", []);
+
+    info.addTeam(3, 'Porto', 'FCP', 1, "Observações", [
+        new Player(1, 'Guilherme Cruz', '1995-06-15', 1, 1.80, 'AV'),
+        new Player(2, 'Diogo Veigas', '1998-03-21', 2, 1.75, 'MC'),
+        new Player(3, 'André Carvalho', '1994-10-05', 3, 1.85, 'DF')
+    ]);
 
     info.addTeam(4, 'Sporting de Braga', 'SCB', 3, "Observações", [
         new Player(1, 'João Silva', '1995-06-15', 1, 1.80, 'AV'),
@@ -61,28 +71,38 @@ window.onload = function (event) {
     ]);
 
 
-    info.addTeam(5, 'Gollaços.pt', 'SCB', 3, "Observações", [
+    info.addTeam(5, 'Gollaços.pt', 'GLC', 5, "Observações", [
         new Player(1, 'Ola', '1995-06-15', 1, 1.80, 'AV'),
         new Player(2, 'Adeus', '1998-03-21', 2, 1.75, 'MC'),
         new Player(3, 'Ve la', '1994-10-05', 3, 1.85, 'DF'),
-        new Player(3, 'Isso', '1994-10-05', 3, 1.85, 'DF')
+        new Player(4, 'Isso', '1994-10-05', 3, 1.85, 'DF')
     ]);
 
-    /* meter olho centro */
+    info.addTeam(6, 'Veigas Eleven', 'VEE', 9, "Great team.", [
+        new Player(1, 'John', '1996-07-15', 1, 1.80, 'AV'),
+        new Player(2, 'David', '1999-04-21', 2, 1.75, 'MC'),
+        new Player(3, 'Michael', '1995-11-05', 3, 1.85, 'DF'),
+        new Player(4, 'Robert', '1995-11-05', 3, 1.85, 'GR'),
+        new Player(5, 'Paul', '1997-02-03', 1, 1.82, 'AV'),
+        new Player(6, 'Mark', '1998-01-01', 2, 1.78, 'MC'),
+        new Player(7, 'Luke', '1995-08-08', 3, 1.83, 'DF'),
+        new Player(8, 'Jack', '1995-08-08', 3, 1.81, 'DF'),
+        new Player(9, 'James', '1996-09-12', 2, 1.79, 'MC'),
+        new Player(10, 'George', '1997-06-07', 1, 1.83, 'AV'),
+        new Player(11, 'Harry', '1998-11-02', 3, 1.85, 'DF')
+    ]);
 
+    info.addCompetition(1, 'Taça de Portugal', '2023', '', []);//ult e bolean true se tiver terminado, so para testar o log
+    info.addCompetition(2, 'Taça da liga', '2023', '', []);//ult e bolean false se estiver a decorrer 
 
-    info.addCompetition(1, 'Taça de Portugal', '2023', '',  false, []);//ult e bolean true se tiver terminado, so para testar o log
-    info.addCompetition(2, 'Taça da liga', '2023', '', false, []);//ult e bolean false se estiver a decorrer 
-
-    info.addCompetition(3, 'Liga Europa', '2023', info.teams[3], true, [
+    info.addCompetition(3, 'Liga Europa', '2023', info.teams[3], [
         info.teams[2],
         info.teams[3],
         info.teams[4]
     ]); //teste liga criada com o SCB e FCP la dentro
 
-    //teste das equipas e competicoes
-    info.teams.pop()
-
+    //teste estado a funcionar
+    info.competitions[2].state = true
     
     window.info = info;
 };
@@ -135,17 +155,19 @@ function tableLine(object, headerFormat) {
     }
 
     //Remover editar adicionar filhos
-    tr = addEditRemoveIcons(tr, id, headerFormat)
+    tr = addEditRemoveIcons(tr, id, headerFormat, object instanceof Competition)
     
     return tr;
 };
 
 function tableRowConditions(property, content){
     if(property === 'state'){//se for o estado de um campeonato
-        if(!content)
-            return 'A decorrer'
+        if(content === null)
+            return 'Waiting'
+        else if(content === false)
+            return 'Running'
         else
-            return 'Terminado'
+            return 'Finished'
     }
 
     if(property === 'idCountry'){
@@ -156,88 +178,121 @@ function tableRowConditions(property, content){
             console.error('Pais não encontrado')
     }
     
-    
     return content
 }
 
-function addEditRemoveIcons(tr, id, headerFormat){
+function addEditRemoveIcons(tr, id, headerFormat, isCompetition){
     var tableCell = null
 
-    if(!headerFormat){//celula
-        switch(navLinkName()){
-            case 'Competitions':
-            case 'Teams':
-                if(info.backHistory.length === 0){//nao se pode adicionar nada a filhos
-                    /* Adicionar */
-                    tableCell = document.createElement("td");
-                    const addAnchor = document.createElement('a')
-                    /* addAnchor.href = `javascript: info.seeDetails(${id}, true)`//Alterar consoante necessário */
-                    addAnchor.innerHTML = '<i class="fa-solid fa-circle-plus seeDetails"></i>'
-                    tableCell.appendChild(addAnchor)
-                    tr.appendChild(tableCell)
-                }
-                break;
+    if(isCompetition){
+        const competition = info.competitions.find(c => c.id === id)
+        if(competition)
+            var competitionState = competition.state
+    }
+
+    if (info.backHistory.at(-1) && info.backHistory.at(-1)[4] === true) {//se estamos a adicionar filhos
+        if(!headerFormat){
+            tableCell = document.createElement("td");
+            const editAnchor = document.createElement('a')
+            editAnchor.href = `javascript: info.addOneChild(${id})`//Alterar consoante necessário
+            editAnchor.innerHTML = '<i class="fa-solid fa-circle-plus seeDetails"></i>'
+            tableCell.appendChild(editAnchor)
+            tr.appendChild(tableCell)
+        }else{
+            tableCell = document.createElement("th");
+            tableCell.textContent = 'Add'
+            tr.appendChild(tableCell)
         }
-        switch(navLinkName()){//Countries nao alteram
-            case 'Competitions':
-            case 'Teams':
-            case 'Players':
-                if(info.backHistory.length <= 1){//nao se podem eliminar jogadores dentro de equipas dentro de competicoes
-                    if(info.backHistory.length === 0){//so se pode editar o principal
-                        /* Editar */
-                        tableCell = document.createElement("td");
-                        const editAnchor = document.createElement('a')
-                        editAnchor.href = `javascript: info.editRow(${id})`//Alterar consoante necessário
-                        editAnchor.innerHTML = '<i class="fa-solid fa-pencil seeDetails"></i>'
-                        tableCell.appendChild(editAnchor)
-                        tr.appendChild(tableCell)
-                    }
-                    
-                    /* Remover */
-                    tableCell = document.createElement("td");
-                    const deleteAnchor = document.createElement('a')
-                    deleteAnchor.href = `javascript: info.removeRow(${id})`//Alterar consoante necessário
-                    deleteAnchor.innerHTML = '<i class="fa-solid fa-trash-can seeDetails"></i>'
-                    tableCell.appendChild(deleteAnchor)
-                    tr.appendChild(tableCell)
-                }
-                break;
-        }
-    }else{//cabecalho
-        var tab = navLinkName()
-        if(info.backHistory.length === 0){//nao se pode adicionar nada a filhos
-            switch(tab){ //has child nao funciona pois nao existem arrays nos cabecalhos, se tiver duvidas verificar (Array.isArray(content))
+    }else{ 
+        // se nao estiver a adicionar filhos
+        if(!headerFormat){//celula
+            switch(navLinkName()){
                 case 'Competitions':
-                    tableCell = document.createElement("th");
-                    tableCell.textContent = 'Add Teams'
-                    tr.appendChild(tableCell)
-                    break;
                 case 'Teams':
-                    tableCell = document.createElement("th");
-                    tableCell.textContent = 'Add Players'
-                    tr.appendChild(tableCell)
-                    break;
-            } 
-        }
-        switch(tab){//Countries nao alteram
-            case 'Competitions':
-            case 'Teams':
-            case 'Players':
-                if(info.backHistory.length <= 1){
-                    if(info.backHistory.length === 0){
-                        //Edit
-                        tableCell = document.createElement("th");
-                        tableCell.textContent = 'Edit'
+                    if(info.backHistory.length === 0){//nao se pode adicionar nada a filhos
+                        /* Adicionar */
+                        tableCell = document.createElement("td");
+                        const addAnchor = document.createElement('a')
+                        if(competitionState !== null)//se a competicao ja tiver comecado
+                            addAnchor.href = `javascript: showToast(undefined, 'Competition has already started')`
+                        else
+                            addAnchor.href = `javascript: info.addChilds(${id})`//recebe o id do pai ao qual serão adicionados filhos
+                        
+                            addAnchor.innerHTML = '<i class="fa-solid fa-circle-plus seeDetails"></i>'
+                        tableCell.appendChild(addAnchor)
                         tr.appendChild(tableCell)
                     }
-                    
-                    //Remove
-                    tableCell = document.createElement("th");
-                    tableCell.textContent = 'Remove'
-                    tr.appendChild(tableCell)
-                    
-                }
-                break;
+                    break;
+            }
+            switch(navLinkName()){//Countries nao alteram
+                case 'Competitions':
+                case 'Teams':
+                case 'Players':
+                    if(info.backHistory.length <= 1){//nao se podem eliminar jogadores dentro de equipas dentro de competicoes
+                        if(info.backHistory.length === 0){//so se pode editar o principal
+                            /* Editar */
+                            tableCell = document.createElement("td");
+                            const editAnchor = document.createElement('a')
+                            if(competitionState !== null)
+                                editAnchor.href = `javascript: showToast(undefined, 'Competition has already started')`
+                            else
+                                editAnchor.href = `javascript: info.editRow(${id})`//Alterar consoante necessário
+                            
+                            editAnchor.innerHTML = '<i class="fa-solid fa-pencil seeDetails"></i>'
+                            tableCell.appendChild(editAnchor)
+                            tr.appendChild(tableCell)
+                        }
+                        
+                        /* Remover */
+                        //se for vencedor de uma competicao, nao se deve apagar
+                        
+                            tableCell = document.createElement("td");
+                            const deleteAnchor = document.createElement('a')
+                            deleteAnchor.href = `javascript: info.removeRow(${id})`//Alterar consoante necessário
+                            deleteAnchor.innerHTML = '<i class="fa-solid fa-trash-can seeDetails"></i>'
+                            tableCell.appendChild(deleteAnchor)
+                            tr.appendChild(tableCell)
+                        
+                        
+                    }
+                    break;
+            }
+        }else{//cabecalho
+            var tab = navLinkName()
+            if(info.backHistory.length === 0){//nao se pode adicionar nada a filhos
+                switch(tab){ //has child nao funciona pois nao existem arrays nos cabecalhos, se tiver duvidas verificar (Array.isArray(content))
+                    case 'Competitions':
+                        tableCell = document.createElement("th");
+                        tableCell.textContent = 'Add Teams'
+                        tr.appendChild(tableCell)
+                        break;
+                    case 'Teams':
+                        tableCell = document.createElement("th");
+                        tableCell.textContent = 'Add Players'
+                        tr.appendChild(tableCell)
+                        break;
+                } 
+            }
+            switch(tab){//Countries nao alteram
+                case 'Competitions':
+                case 'Teams':
+                case 'Players':
+                    if(info.backHistory.length <= 1){
+                        if(info.backHistory.length === 0){
+                            //Edit
+                            tableCell = document.createElement("th");
+                            tableCell.textContent = 'Edit'
+                            tr.appendChild(tableCell)
+                        }
+                        
+                        //Remove
+                        tableCell = document.createElement("th");
+                        tableCell.textContent = 'Remove'
+                        tr.appendChild(tableCell)
+                        
+                    }
+                    break;
+            }
         }
     }
     
