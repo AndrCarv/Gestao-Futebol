@@ -8,23 +8,25 @@
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/introducion.css">
     <script src="scripts/country.js"></script>
+    <script src="scripts/position.js"></script>
     <script src="scripts/player.js"></script>
     <script src="scripts/team.js"></script>
     <script src="scripts/competition.js"></script>
     <script src="scripts/information-essentials.js"></script>
     <script src="scripts/information.js"></script>
+    <script src="scripts/test-data.js"></script>
     <script src="scripts/main.js"></script>
     <script src="scripts/onload.js" defer></script>
 </head>
 <body> 
-    
-    <!-- <div id="introduction">
+    <!---
+    <div id="introduction">
         <div class="centerIntroduction">
             <img id="introduction-image" src="images/Introduction/ronaldo.png" class="img-fluid" alt="Cristiano Ronaldo">
         </div>
         <button id="introduction-button" type="button" class="btn btn-outline-light">Continue</button>
-    </div> -->
-
+    </div>
+-->
     <nav class="navbar navbar-expand-lg bg-body-tertiary navbar-font-size" data-bs-theme="dark">
 		<div class="container-fluid">
 		  <!-- Img Logo -->
@@ -110,12 +112,8 @@
                                     </div>
                                     <div class="col mb-3">
                                         <label for="playerPosition" class="form-label">Position</label>
-                                        <select class="form-select" id="playerPosition" required>
+                                        <select class="form-select positionsSelect" id="playerPosition" required>
                                             <option selected disabled value="">Select a position</option>
-                                            <option value="GR">GR</option>
-                                            <option value="DF">DF</option>
-                                            <option value="MC">MC</option>
-                                            <option value="AV">AV</option>
                                         </select>
                                         <div class="invalid-feedback rounded p-2 bg-pink"></div>   
                                     </div>
@@ -252,6 +250,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
 
     <!-- <script src="scripts/cosmetic/navBar-collapse.js"></script> -->
-    <!-- <script src="scripts/cosmetic/introduction.js"></script> -->
+    <!-- <script src="scripts/cosmetic/introduction.js"></script><-->
 </body>
 </html>

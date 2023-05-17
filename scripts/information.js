@@ -1,5 +1,4 @@
 "use strict";
-
 /** 
 * @class Guarda toda informação necessaria na execução do exercicio 
 * @constructs Informacao
@@ -8,22 +7,26 @@
 * @property {string} id - id do elemento HTML que contém a informação.
 * @property {Country[]} countries - Array de objetos do tipo country, para guardar todos os countries do nosso sistema
 * @property {Player[]} unemployedPlayers - Array de objetos do tipo player, guarda jogadores sem equipa
+* @property {Position[]} positions - Array do tipo position, para guardar as posições existentes no sistema
 * @property {Team[]} teams - Array de objetos do tipo player, guarda equipas e os seus jogadores
 * @property {Competition[]} competitions - Array de objetos do tipo player, guarda competições com equipas conforme adicionadas
 * @property {Array} backHistory - Array de objetos do tipo player, guarda competições com equipas conforme adicionadas 
-                                    [nome(opcional), Array, indexPai(opcional), isWinner(opcional, boolean), toAdd(opcional, boolean)]
+                [nome(opcional), Array, indexPai(opcional), isWinner(opcional, boolean), toAdd(opcional, boolean)]
 */
 class Information {
     constructor(id) {
         this.id = id;
         this.countries = [];
         this.unemployedPlayers = [];
+        this.positions = [];
         this.teams = [];
         this.competitions = [];
         this.backHistory = [];
     }
 
-    /* SHOW */
+    /**
+     * Mostra homepage
+     */
     showHome() {
         /** Actualizar a navegação */
         removeActiveClass()
@@ -47,7 +50,9 @@ class Information {
         showOneHideOther('', 'contentTable')
         showOneHideOther('', 'forms')
     }
-
+    /**
+     * Mostrar a lista dos países
+     */
     showCountries() {
         /** Actualizar a navegação */
         removeActiveClass()
@@ -63,7 +68,9 @@ class Information {
         /** Alternar conteudo */
         updateTableContent(this.countries, 'ID', 'Name', 'Short Name')
     }
-
+    /**
+     * Mostrar a lista das competições e as ações relacionadas à competições
+     */
     showCompetitions() {
         /** Actualizar a navegação */
         removeActiveClass()
@@ -83,7 +90,9 @@ class Information {
 
         this.resetHistory()//evitar problemas
     }
-
+    /**
+     * Mostrar a lista das equipas e as ações disponiveis
+     */
     showTeams(backHistory) {
         /** Actualizar a navegação */
         removeActiveClass()
@@ -110,7 +119,9 @@ class Information {
             this.findCompetitionTeams(undefined, this.teams)
         }
     }
-
+    /**
+     * Mostrar a lista de jogadores e as suas ações
+     */
     showPlayers() {
         /** Actualizar o título */
         removeActiveClass()
@@ -139,6 +150,10 @@ class Information {
         }
     }
 
+    /**
+     * Vai receber o nome da equipa e os players, mudar o DynamicView para o nome da equipa
+     * e atualizar os dados da tabela
+     */
     findTeamPlayers(teamName, players) {
         /** Actualizar o título */
         updateDynamicView(teamName)
@@ -148,10 +163,12 @@ class Information {
         updateTableContent(calculateAge(players), 'ID', 'Name', 'Age', 'Country', 'Heigth', 'Position')
     }
 
+    /**
+     * Vai receber o nome da competição e as equipas nessa competição, para atualizar o DynamicView e a tabela
+     */
     findCompetitionTeams(CompetitonName, teams) {
         /** Actualizar o título */
         updateDynamicView(CompetitonName)
-
         if (this.backHistory[0] && this.backHistory[0][4] === true)
             var action = "Adding Teams"
 
@@ -160,8 +177,9 @@ class Information {
         /** Alternar conteudo */
         updateTableContent(teams, 'ID', 'Name', 'Acronym', 'Country', 'Description', 'View Players')
     }
-
-    /* Mostrar arrays dentro de arrays */
+    /**
+     * Mostrar arrays dentro de arrays
+     */
     seeDetails(id, isWinner) {
         switch (navLinkName()) {
             case 'Teams':
@@ -184,7 +202,7 @@ class Information {
 
                 if (indexTeam > -1) {
                     if (teamArray[indexTeam].players.length === 0) {
-                        showToast()
+                        showToast(undefined, "The team has no players in it")
                         return
                     }
 
@@ -218,9 +236,8 @@ class Information {
             case 'Competitions':
                 const indexComp = this.competitions.findIndex(competition => competition.id === id)
                 if (indexComp > -1) {
-                    if (this.competitions[indexComp].teams.length === 0) {
-                        /* console.error("Registos não encontrados") */
-                        showToast()
+                    if (this.competitions[indexComp].teams.length === 0 || !this.competitions[indexComp].teams) {
+                        showToast(undefined, `No records found in this competition`)
                         break
                     }
 
@@ -253,14 +270,18 @@ class Information {
         this.backHistory = []
     }
 
-    /* Mostra a tabela*/
+    /**
+     * Mostrar a tabela
+     */
     showData() {
         alternateTabs(0)
         showOneHideOther('contentTable', 'forms')
         updateDynamicAction()
     }
 
-    /* Mostra o form*/
+    /**
+     * Mostrar o form
+     */
     showForm(action, view) {
         hideErrors(); //vai esconder os erros das validaçoes
         alternateTabs(1)
@@ -269,7 +290,7 @@ class Information {
         updateDynamicAction(currentAction)
         toggleFormButtons(currentAction)
 
-        //Caso seja recebido por parâmetro
+
         if (view) {
             document.querySelector('#dynamicView').textContent = view
         }
@@ -290,21 +311,43 @@ class Information {
             })
         }
 
+        /**Select Positions */
+        const firstPositionConversion = document.querySelectorAll('.positionsSelect option')/* encontrar quantas opções têm os selects dos paises  */
+
+        if (firstPositionConversion.length === 1) {/* assim não repete, pois devem apenas existir duas vezes uma mensagem "escolha um pais" */
+            const selects = document.querySelectorAll('.positionsSelect');
+
+            selects.forEach((select) => {
+                this.positions.forEach((position) => {
+                    const option = document.createElement('option');
+                    option.value = position.acronym;
+                    option.textContent = position.name;
+                    select.appendChild(option);
+                })
+            })
+        }
+
         /* Associar o form a mostrar */
         switch (navLinkName()) {
             case 'Competitions':
                 hideFormsExceptOne('competitionForm')
+                document.querySelector('#competitionForm form').reset()
                 break;
             case 'Teams':
                 hideFormsExceptOne('teamForm')
+                document.querySelector('#teamForm form').reset()
                 break;
             case 'Players':
                 hideFormsExceptOne('playerForm')
+                document.querySelector('#playerForm form').reset()
                 break;
         }
 
     }
 
+    /**
+     * Voltar à tab anterior
+     */
     selectPreviousTab() {
         const lastHistory = this.backHistory.pop()
         switch (navLinkName()) {
@@ -322,37 +365,45 @@ class Information {
     }
 
     /**
-     * Criar objetos de cada classe
+     * Adicionar um novo país a countries
      */
-
     addCountry(id, name, shortName) {
         /** Obter dados e criar país */
         const country = new Country(id, name, shortName)
         this.countries.push(country)
     }
-    /* Fazer um add para todas as outras páginas */
-
+    /**
+     * Adicionar um jogador ao unemployedPlayers
+     */
     addPlayer(id, name, birthDate, idCountry, height, position) {
         const player = new Player(id, name, birthDate, idCountry, height, position)
         this.unemployedPlayers.push(player);
     }
-
+    /**
+     * Adicionar uma nova equipa a teams
+     */
     addTeam(id, name, acronym, players, idCountry, description) {
         const team = new Team(id, name, acronym, players, idCountry, description)
         this.teams.push(team)
     }
-
-    addCompetition(id, name, date, teams, winner) {
-        const competition = new Competition(id, name, date, teams, winner)
+    /**
+     * Adicionar uma nova competição a competitions
+     */
+    addCompetition(id, name, date, teams, state, winner) {
+        const competition = new Competition(id, name, date, teams, state, winner)
         this.competitions.push(competition)
     }
-
     /**
-     * Adicionar registos através dos forms
+     * Adicionar as posições
      */
-
+    addPosition(name, acronym){
+        const position = new Position(name, acronym)
+        this.positions.push(position)
+    }
+    /**
+     * Criar um novo player apartir dos dados do form, após de serem validados
+     */
     addNewPlayer() {
-        //const id = generateId(); experiencia para criar o id
         const name = document.getElementById("playerName").value.trim();
         const birthDate = document.getElementById("playerBirthDate").value.trim();
 
@@ -361,10 +412,11 @@ class Information {
         const height = document.getElementById("playerHeight").value.trim();
 
         //buscar os dados ao dropbox da posicao
-        const position = document.querySelector('#playerPosition').value
+        
+        const position = document.querySelector('#playerPosition').value;
 
         //o novo id criado sera sempre um acima, se houver 5. o prox tem o id 6
-        const id = (this.unemployedPlayers.length + 1) || 1; //caso seja o primeiro registo, começa a 1
+        const id = (this.unemployedPlayers.at(-1).id + 1) || 1; //caso seja o primeiro registo, começa a 1
 
         //validar os dados
 
@@ -387,8 +439,14 @@ class Information {
         this.unemployedPlayers.push(p)
         console.log(this.unemployedPlayers);
         this.showPlayers()
-    }
 
+        /* Local Storage */
+        let jsonString = JSON.stringify({ unemployedPlayers: this.unemployedPlayers })
+        localStorage.setItem('unemployedPlayers', jsonString)
+    }
+    /**
+     * Criar uma nova equipa com os dados dos form, após de serem validados
+     */
     addNewTeam() {
         const name = document.getElementById("teamName").value.trim();
         const acronym = document.getElementById("teamAcronym").value.trim();
@@ -396,7 +454,7 @@ class Information {
         //buscar os dados ao dropbox dos paises
         const idCountry = parseInt(document.querySelector('#teamCountry').value);
         const description = document.getElementById("teamObservations").value.trim();
-        const id = (this.teams.length + 1) || 1;
+        const id = (this.teams.at(-1).id + 1) || 1;
         const players = [];
 
         //validar os dados
@@ -413,10 +471,16 @@ class Information {
         this.teams.push(t)
         console.log(this.teams);
         this.showTeams()
-    }
 
+        /* Local Storage */
+        let jsonString = JSON.stringify({ teams: this.teams })
+        localStorage.setItem('teams', jsonString)
+    }
+    /**
+     * Criar uma nova competição apartir dos dados do form, após de serem validados
+     */
     addNewCompetition() {
-        const id = (this.competitions.length + 1) || 1;
+        const id = (this.competitions.at(-1).id + 1) || 1;
         //trim para remover espaço branco a frente e no fim, no caso for inserido espaços
         const name = document.getElementById("competitionName").value.trim();
         const date = document.getElementById("competitionEdition").value.trim();
@@ -431,10 +495,14 @@ class Information {
         document.querySelector('#competitionForm form').reset()
 
         /* Criar objeto */
-        const c = new Competition(id, name, date, winner, teams)
+        const c = new Competition(id, name, date, winner, null, teams)
         this.competitions.push(c);
         console.log(this.competitions)
         this.showCompetitions()
+
+        /* Local Storage */
+        let jsonString = JSON.stringify({ competitions: this.competitions })
+        localStorage.setItem('competitions', jsonString)
     }
 
     /**
@@ -451,6 +519,10 @@ class Information {
                     //await function
                     this.competitions.splice(index, 1)
                     this.showCompetitions()
+
+                    /* Local Storage */
+                    let jsonString = JSON.stringify({ competitions: this.competitions })
+                    localStorage.setItem('competitions', jsonString)
                 }
                 break;
             case 'Teams':
@@ -460,6 +532,10 @@ class Information {
                         showModal("Delete?", "Are you sure you want to delete the team '" + this.teams[index].name + "' ?")
                         this.teams.splice(index, 1)
                         this.showTeams()
+
+                        /* Local Storage */
+                        let jsonString = JSON.stringify({ teams: this.teams })
+                        localStorage.setItem('teams', jsonString)
                     }
                 } else {//com historico
                     const name = document.querySelector('#dynamicView').textContent
@@ -506,13 +582,24 @@ class Information {
                         //Mostrar equipas dentro da competição
 
                         this.findCompetitionTeams(name, array)
+
+                        /* Local Storage */
+                        let jsonString = JSON.stringify({ teams: this.teams })
+                        localStorage.setItem('teams', jsonString)
                     }
+
+                    /* Local Storage */
+                    let jsonString = JSON.stringify({ unemployedPlayers: this.unemployedPlayers })
+                    localStorage.setItem('unemployedPlayers', jsonString)
 
                 }
                 break;
         }
     }
-
+    /**
+     * Recebe o id da entidade que quer editar, e vai mostrar os dados que podem 
+     * ser editados de acordo se a entidade for uma competição, equipa ou jogador
+     */
     editRow(id) {
         /* A tab está certa? */
         switch (navLinkName()) {
@@ -537,7 +624,7 @@ class Information {
                         let nomeTemp = document.getElementById('competitionName').value.trim();
                         let editionTemp = document.getElementById('competitionEdition').value.trim();
 
-                        const newCompetition = new Competition(comp.id, nomeTemp, editionTemp, comp.winner, comp.teams);
+                        const newCompetition = new Competition(comp.id, nomeTemp, editionTemp, comp.winner, comp.state, comp.teams);
 
                         /* Validar a formatação da informação */
                         if (!validateCompetition(newCompetition.name, newCompetition.edition)) {
@@ -551,8 +638,11 @@ class Information {
                         /* Fazer as alterações no array */
                         this.competitions[index] = newCompetition;
                         /* Chamar show competição (neste caso) */
-                        document.querySelector('#teamForm form').reset()
                         this.showCompetitions();
+
+                        /* Local Storage */
+                        let jsonString = JSON.stringify({ competitions: this.competitions })
+                        localStorage.setItem('competitions', jsonString)
                     };
                     compEditButton.addEventListener('click', editCompetition);
                 }
@@ -581,8 +671,8 @@ class Information {
                         let observationTemp = document.getElementById('teamObservations').value.trim()
 
                         const newTeam = new Team(team.id, nomeTemp, acronymTemp, countryTemp, observationTemp, team.players)
-                        //validar os dados
 
+                        //validar os dados
                         if (!validateTeam(newTeam.name, newTeam.acronym, newTeam.idCountry, newTeam.description)) {
                             teamEditButton.removeEventListener('click', teamEditButton);
                             teamEditButton.addEventListener('click', teamEditButton);
@@ -593,6 +683,10 @@ class Information {
 
                         this.teams[index] = newTeam
                         this.showTeams();
+
+                        /* Local Storage */
+                        let jsonString = JSON.stringify({ teams: this.teams })
+                        localStorage.setItem('teams', jsonString)
                     };
                     teamEditButton.addEventListener('click', editTeam);
                 }
@@ -618,13 +712,12 @@ class Information {
                         let nomeTemp = document.getElementById('playerName').value.trim()
                         let birthdateTemp = document.getElementById('playerBirthDate').value.trim()
                         let heightTemp = document.getElementById('playerHeight').value.trim()
-                        let posTemp = document.querySelector('#playerPosition').value
+                        let posTemp = document.getElementById('playerPosition').value
                         let countryTemp = parseInt(document.getElementById('playerCountry').value)
 
                         const newPlayer = new Player(player.id, nomeTemp, birthdateTemp, countryTemp, heightTemp, posTemp)
-                        console.log(newPlayer)
-                        //validar os dados
 
+                        //validar os dados
                         if (!validatePlayer(newPlayer.name, newPlayer.birthDate, newPlayer.idCountry, newPlayer.height, newPlayer.position)) {
                             playerEditButton.removeEventListener('click', playerEditButton);
                             playerEditButton.addEventListener('click', playerEditButton);
@@ -634,55 +727,63 @@ class Information {
                         showModal("Edit?", "Are you sure you want to edit this player?")
 
                         this.unemployedPlayers[index] = newPlayer
+
                         this.showPlayers();
+                        /* Local Storage */
+                        let jsonString = JSON.stringify({ unemployedPlayers: this.unemployedPlayers })
+                        localStorage.setItem('unemployedPlayers', jsonString)
                     };
                     playerEditButton.addEventListener('click', editPlayer);
                 }
                 break;
         }
     }
-
+    /**
+     * Recebe uma entidade e o seu id, se for Competitions verifica se ela ainda tem espaço para adicionar equipas,
+     * se for uma Teams verifica se pode adicionar jogadores. Se for possivel, usa a funcao childToAdd para 
+     * adicionar os dados
+     * */
     addChilds(id) {
         switch (navLinkName()) {
             case 'Competitions':
                 const maxEquipas = 16
                 //encontrar id
-                const competition = this.competitions.find(competition => id === competition.id)
-                if (competition) {//se econtrou
-                    if (competition.teams.length < maxEquipas) {//quantas equipas tem?
+                const indexComp = this.competitions.findIndex(comp => comp.id === id)
+                if (indexComp > -1) {//se econtrou
+                    if (this.competitions[indexComp].teams.length < maxEquipas) {//quantas equipas tem?
                         //chamar funcao que apresenta as equipas
+                        this.childToAdd(this.competitions[indexComp], indexComp)
 
-                        const indexParent = this.competitions.findIndex(comp => comp.id === id)
-                        if (indexParent > -1)
-                            //enviar o array e o index
-                            this.childToAdd(competition, indexParent)
-                        else
-                            console.error('Id não encontrado?')
                     } else {
                         //TALVEZ mudar icone, pois esta cheio
-                        showToast()
-
+                        showToast(undefined, `Not possible to add more teams to ${this.competition.name}`)
                     }
                 }
                 break
             case 'Teams':
-                //Aqui
+                const indexTeam = this.teams.findIndex(t => t.id === id)
+                if (indexTeam > -1) {
+                    this.childToAdd(this.teams[indexTeam], indexTeam)
+                }
                 break
         }
     }
-
+    /**
+     * Recebe uma entidade parente e o seu id, se for Competitions verifica se existe equipas disponiveis para adicionar,
+     * se houver adiciona-a na competição.
+     * Se for Teams, vai verificar se existe jogadores disponiveis para adicionar à equipa
+     */
     childToAdd(parent, parentIndex) {
         switch (navLinkName()) {
             case 'Competitions':
-                //spread operator divide os elemtnos do array
+                //spread operator divide os elementos do array
                 let teams = [...this.teams] //chavetas retas volta a meter num array, ou seja, parte a ligação de endereço
 
                 /* Ver equipas que podem ser adicionadas */
                 let teamsToShow = getToAddTeams(teams, parent);
-
                 //verifica se existem equipas que podem ser adicionadas
                 if (teamsToShow.length == 0) {
-                    showToast()
+                    showToast(undefined, `There are no teams avaible to add to ${parent.name}`)
                     return
                 }
 
@@ -700,32 +801,89 @@ class Information {
                 break
             case 'Teams':
                 //Aqui
+                if (this.unemployedPlayers.length == 0) {
+                    showToast(undefined, `There are no players avaible to add to ${parent.name}`);
+                }
+                this.backHistory.push([parent.name, this.teams, parentIndex, false, true])
+                this.findTeamPlayers(parent.name, this.unemployedPlayers)
+
+                removeActiveClass()
+                addActive('playersAnchor')
+                activateTab()
+                showTab('showTab')
+                hideTab('formTab')
+
                 break
         }
     }
 
     /**
-     * Receber um id da equipa a adicionar a uma competição
+     * Receber um id de uma entidade, se a entidade for uma equipa adicionar ela à competição .
+     * Se a entidade for um jogador recebe o seu id para adicionar a uma equipa
      */
     addOneChild(id) {
         switch (navLinkName()) {
-            case 'Teams':
+            case 'Teams': //o add de team e comp estao a entrar neste
                 const teamIndex = this.teams.findIndex(t => t.id === id)
                 if (teamIndex > -1) {
-                    //recebe a equipa especifica
-                    const teamToAdd = this.teams.slice(teamIndex, teamIndex + 1)[0]
+                    //objeto referencia
+                    const referencedTeam = this.teams.slice(teamIndex, teamIndex + 1)[0]
+                    //recebe a equipa especifica como cópia
+                    const teamToAdd = new Team(referencedTeam.id, referencedTeam.name, 
+                        referencedTeam.acronym, referencedTeam.idCountry, referencedTeam.description, referencedTeam.players)
                     //recebe a comp especifica
                     const competition = this.backHistory[0][1][this.backHistory[0][2]]
-                    //adiciona
+
+                    //Ajustar ID
+                    if (competition.teams.at(-1))
+                        teamToAdd.id = competition.teams.at(-1).id + 1
+                    else
+                        teamToAdd.id = 1
+
+                    //adiciona equipa
                     competition.teams.push(teamToAdd)
                     showToast("Sucess", `${teamToAdd.name} added to ${competition.name} successfully`)
+
+                    /* Local Storage */
+                    let jsonString = JSON.stringify({ competitions: this.competitions })
+                    localStorage.setItem('competitions', jsonString)
 
                     this.selectPreviousTab()
                 } else
                     console.error('Não encontrou equipa?')
                 break
             case 'Players':
-                //Aqui
+                const playerIndex = this.unemployedPlayers.findIndex(p => p.id === id)
+                if (playerIndex > -1) {
+                    //objeto referencia
+                    const referencedPlayer = this.unemployedPlayers.splice(playerIndex, 1)[0]
+                    //recebe a equipa especifica
+                    const playerToAdd = new Player(referencedPlayer.id, referencedPlayer.name, referencedPlayer.birthDate,
+                        referencedPlayer.idCountry, referencedPlayer.height, referencedPlayer.position )
+                    //recebe a equipa especifica
+                    const team = this.backHistory[0][1][this.backHistory[0][2]]
+
+                    //ajustar ID
+                    if (team.players.at(-1))
+                        playerToAdd.id = team.players.at(-1).id + 1
+                    else
+                        playerToAdd.id = 1
+
+                    //Adicionar jogador
+                    team.players.push(playerToAdd);
+                    showToast("Sucess", `${playerToAdd.name} added to ${team.name} sucessfully`)
+
+                    /* Local Storage - TEAMS */
+                    let jsonString = JSON.stringify({ teams: this.teams })
+                    localStorage.setItem('teams', jsonString)
+
+                    /* Local Storage - PLAYERS */
+                    jsonString = JSON.stringify({ unemployedPlayers: this.unemployedPlayers })
+                    localStorage.setItem('this.unemployedPlayers', jsonString)
+
+                    this.selectPreviousTab()
+                } else
+                    console.error('Não foi encontrado jogadores')
                 break
         }
     }

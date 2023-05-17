@@ -8,7 +8,7 @@
 * @param {Date} birthDate - data de nascimento do jogador
 * @param {int} idCountry - id do pais do jogador
 * @param {double} height - altura do jogador
-* @param {string} position - posição em que o o jogador joga
+* @param {String} position - posição em que o o jogador joga
 */
 class Player {
     constructor(id, name, birthDate, idCountry, height, position) {

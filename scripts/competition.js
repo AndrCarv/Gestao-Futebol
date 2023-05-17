@@ -11,7 +11,7 @@
 * @param {Teams[]} teams - equipas
 */
 class Competition {
-    constructor(id, name, edition, winner, teams) {
+    constructor(id, name, edition, winner, state = null, teams) {
         this.id = id;
         this.name = name;
         this.edition = edition;
@@ -20,7 +20,7 @@ class Competition {
         this.winner = winner || ""
 
         //começa a null pois ainda nao se quer começou
-        this.state = null
+        this.state = state
 
         this.teams = teams;
 

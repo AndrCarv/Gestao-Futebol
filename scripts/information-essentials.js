@@ -35,23 +35,26 @@ function removeActiveClass() {
 }
 
 /**
- * Show and hide tabs
+ * Mostrar a tab
  */
-
 function showTab(tabId) {
     document.querySelector('#' + tabId).style.visibility = 'visible'
 }
-
+/**
+ * Esconder a tab 
+ * */
 function hideTab(tabId) {
     document.querySelector('#' + tabId).style.visibility = 'hidden'
 }
-
+/**
+ * Desativar a tab
+ */
 function disableTab() {
     document.querySelector('#backTab').style.visibility = 'hidden'
 }
 
 /**
- * Ativar e desativar tab para voltar atrás
+ * Ativar a tab para voltar atrás
  */
 
 function activateTab() {
@@ -112,7 +115,6 @@ function updateDynamicAction(action) {
  * Verifica o numero de colunas uma pagina pode ter 
  * e retorna um objeto com esse numero de chaves
  */
-
 function getEmptyObject() {
     var emptyObject = {}
     var objectLength = 0
@@ -138,7 +140,7 @@ function getEmptyObject() {
 
 
 /**
- * Serve para preencher uma tabel com os dados de um objeto
+ * Serve para preencher uma tabela com os dados de um objeto
  * O array recebe os cabeçalhos 
  */
 function updateTableContent(array, ...args) {
@@ -179,7 +181,7 @@ function updateTableContent(array, ...args) {
 }
 
 /**
- * Calcular a idade dos jogadores e devolver os jogadores com a idade em vez da data
+ * Calcular a idade dos jogadores e devolver os jogadores com a idade em vez da data 
  */
 function calculateAge(players) {
     const agedPlayers = players.map(player => {
@@ -228,10 +230,12 @@ function getDate(sum) {
     return date.split('/').reverse().join('-') //troca a ordem e adiciona hifen
 }
 
-/**
- * Verificações de inputs
+
+//Verificações de inputs
+
+/** 
+ * Verifica se um input só tem letras 
  */
-/* Verifica se um input só tem letras */
 function onlyLetters(input) {
     const regex = /^[a-zA-ZÀ-ÖØ-öø-ÿ\s]+$/; //permite letras, espaços e acentos apenas
     if (!regex.test(input))
@@ -240,7 +244,9 @@ function onlyLetters(input) {
     return true;
 }
 
-/* Verifica se o comprimento de uma string está dentro de um intervalo */
+/** 
+ * Verifica se o comprimento de uma string está dentro de um intervalo 
+ */
 function inInterval(string, min, max) {
     if (string.length >= min && string.length <= max)
         return true
@@ -248,7 +254,9 @@ function inInterval(string, min, max) {
     return false
 }
 
-/* Verificar que data é mais antiga */
+/**  
+ *Verificar que data é mais antiga 
+ */
 function firstIsOlder(date1, date2) {
     const d1 = new Date(date1)
     const d2 = new Date(date2)
@@ -258,7 +266,9 @@ function firstIsOlder(date1, date2) {
     return false
 }
 
-/* Esconder todos os erros */
+/**
+ *Esconder todos os erros 
+ */
 function hideErrors() {
     const errors = document.querySelectorAll('.invalid-feedback')
     errors.forEach(error => {
@@ -267,15 +277,18 @@ function hideErrors() {
     })
 }
 
-/* Atribuir um erro a um input específico */
+/** 
+ *Atribuir um erro a um input específico 
+ */
 function showError(id, message) {
     const error = document.querySelector('#' + id).nextElementSibling
     error.style.display = 'block'
     error.textContent = message
 }
 
-/* Mostrar modal com titulo e mensagem*/
-
+/**
+ *Mostrar modal com titulo e mensagem
+ */
 function showModal(title, message) {
     const myModal = document.querySelector('#modal')
     document.querySelector('#modalTitle').textContent = title || "Confirmation"
@@ -285,8 +298,9 @@ function showModal(title, message) {
     modal.show()
 }
 
-/* Mostrar toast com titulo e mensagem*/
-
+/** 
+ *Mostrar toast com titulo e mensagem
+ */
 function showToast(title, message) {
     const myToast = document.querySelector('#toast')
     document.querySelector('#toast-title').textContent = title || "Warning"
@@ -303,7 +317,6 @@ function showToast(title, message) {
 /**
  *Funcao do botao 
  */
-
 function toggleFormButtons(currentAction) {
     switch (currentAction) {
         case 'Editing':
@@ -328,11 +341,11 @@ function toggleFormButtons(currentAction) {
     }
 }
 
+/*Verificações dos dados*/
+
 /**
- * Verificações dos dados
+ * Verificação dos dados da competição
  */
-
-
 function validateCompetition(name, date) {
     if (!name || !date) {
         showError('generalError', "Por favor, preencha todos os campos obrigatórios.");
@@ -358,6 +371,9 @@ function validateCompetition(name, date) {
     return true;
 }
 
+/**
+ * Verificação dos dados da equipa
+ */
 function validateTeam(name, acronym, idCountry, description) {
     if (!name || !acronym || !idCountry) {
         showError('teamObservations', "Por favor, preencha todos os campos obrigatórios.");
@@ -391,6 +407,9 @@ function validateTeam(name, acronym, idCountry, description) {
     return true;
 }
 
+/**
+ * Verificação dos dados do jogador
+ */
 function validatePlayer(name, birthDate, idCountry, height, position) {
     if (!name || !birthDate || !idCountry || !height || !position) {
         showError('playerCountry', "Por favor, preencha todos os campos obrigatórios.");
@@ -423,7 +442,6 @@ function validatePlayer(name, birthDate, idCountry, height, position) {
 /**
  * Função responsável por determinar que equipas podem ser adicionadas a dada competição
 */
-
 function getToAddTeams(teams, parent){
     let teamsToShow = []
 
@@ -453,8 +471,8 @@ function getToAddTeams(teams, parent){
             }
         }
     }
-
     return teamsToShow
 }
+
 
                 
